@@ -1,4 +1,4 @@
-# Local development only — provides PostgreSQL + Redis.
+# Local development only — provides PostgreSQL, Redis, and the backend API.
 # In production, use Zeabur's managed services.
 
 version: '3.9'
@@ -21,6 +21,23 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    environment:
+      PORT: "8080"
+      DATABASE_URL: postgresql://user:pass@postgres:5432/aeo
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
 
 volumes:
   pg_data:
