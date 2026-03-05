@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum ScanStatus {
+  PENDING
+  SCANNING
+  COMPLETE
+  FAILED
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+/// A scanned website. Slug is the canonicalized URL used as a public identifier.
+model Website {
+  id            String     @id @default(cuid())
+  /// Canonical URL, e.g. "silinno.com" or "silinno.com/products"
+  url           String     @unique
+  /// URL-safe slug, e.g. "silinno-com" or "silinno-com-products"
+  slug          String     @unique
+  title         String?
+  /// Category tag shown in the directory (e.g. "其他", "商家", "餐廳")
+  category      String     @default("其他")
+  score         Int        @default(0)
+  scanStatus    ScanStatus @default(PENDING)
+  scanCount     Int        @default(0)
+  lastScannedAt DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  aeoContent  AeoContent?
+  scanResults ScanResult[]
+
+  @@map("websites")
+}
+
+/// Generated AEO content for a website — llms.txt, JSON-LD, address HTML, and
+/// the raw structured data extracted by the LLM pipeline.
+model AeoContent {
+  id        String @id @default(cuid())
+  websiteId String @unique
+
+  // ── Generated text artifacts ──────────────────────────────────────────────
+  /// Full llms.txt Markdown file content
+  llmsTxt        String @db.Text
+  /// <script type="application/ld+json"> FAQPage block (ready to embed)
+  faqJsonLd      String @db.Text
+  /// <address> footer HTML snippet (ready to embed)
+  addressHtml    String @db.Text
+  /// <link rel="llms-txt" href="..."> tag (ready to embed in <head>)
+  llmsTxtLinkTag String
+
+  // ── LLM-extracted structured data ─────────────────────────────────────────
+  businessName     String?
+  tagline          String?
+  about            String?  @db.Text
+  features         Json // string[]
+  productsServices Json // string[]
+  faq              Json // { q: string; a: string }[]
+  searchKeywords   Json // string[]
+  recommendations  Json // string[]
+  contact          Json // { phone: string|null; email: string|null; address: string|null }
+
+  /// Language of the generated content: "en" | "zh-TW" | "zh-CN"
+  lang String @default("en")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@map("aeo_content")
+}
+
+/// Per-scan score breakdown. Each scan creates one record; history is preserved.
+model ScanResult {
+  id        String @id @default(cuid())
+  websiteId String
+
+  /// Composite score 0–100
+  score Int
+
+  // ── Per-category scores (0–100, weighted internally) ─────────────────────
+  scoreTitle     Int @default(0)
+  scoreMetaDesc  Int @default(0)
+  scoreOgTags    Int @default(0)
+  scoreJsonLd    Int @default(0)
+  scoreFaqSchema Int @default(0)
+  scoreLlmsTxt   Int @default(0)
+  scoreContact   Int @default(0)
+  scoreImages    Int @default(0)
+
+  // ── Raw boolean checks ───────────────────────────────────────────────────
+  hasTitle     Boolean @default(false)
+  hasMetaDesc  Boolean @default(false)
+  hasOgTags    Boolean @default(false)
+  hasJsonLd    Boolean @default(false)
+  hasFaqSchema Boolean @default(false)
+  hasLlmsTxt   Boolean @default(false)
+  hasPhone     Boolean @default(false)
+  hasEmail     Boolean @default(false)
+  hasAddress   Boolean @default(false)
+  hasImages    Boolean @default(false)
+
+  scannedAt DateTime @default(now())
+
+  website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@index([websiteId])
+  @@index([scannedAt])
+  @@map("scan_results")
+}
+
+/// Every AI bot request logged at the Express middleware layer.
+model CrawlerLog {
+  id         String @id @default(cuid())
+  botName    String // "ClaudeBot"
+  botCompany String // "Anthropic"
+  urlPath    String // "/aeo/shops/silinno-com/llms.txt"
+  statusCode Int    @default(200)
+  ipAddress  String?
+  userAgent  String? @db.Text
+  visitedAt  DateTime @default(now())
+
+  @@index([visitedAt])
+  @@index([botName])
+  @@map("crawler_logs")
+}
+
+/// Email subscribers for feature announcements.
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("subscribers")
+}

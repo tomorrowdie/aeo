@@ -1,0 +1,41 @@
+# ── Planning & reference docs (not for version control) ──────────────────────
+docs/
+screenshot/
+
+# ── Node / npm ────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── Environment secrets ───────────────────────────────────────────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ── Next.js ───────────────────────────────────────────────────────────────────
+.next/
+out/
+
+# ── Prisma ────────────────────────────────────────────────────────────────────
+backend/prisma/migrations/
+backend/generated/
+
+# ── Playwright ────────────────────────────────────────────────────────────────
+backend/playwright-report/
+backend/test-results/
+
+# ── OS / editor ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/settings.json
+.idea/
+
+# ── Build output ──────────────────────────────────────────────────────────────
+dist/
+build/

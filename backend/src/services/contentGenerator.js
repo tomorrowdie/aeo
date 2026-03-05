@@ -1,0 +1,239 @@
+'use strict';
+
+// ── Locale-aware UI labels ────────────────────────────────────────────────────
+
+const LABELS = {
+  en: {
+    phone:        'Phone',
+    email:        'Email',
+    address:      'Address',
+    notFound:     'Not found',
+    footerComment: '<!-- Paste into footer -->',
+  },
+  'zh-TW': {
+    phone:        '電話',
+    email:        'Email',
+    address:      '地址',
+    notFound:     '找不到電話或地址',
+    footerComment: '<!-- 貼到 footer -->',
+  },
+  'zh-CN': {
+    phone:        '电话',
+    email:        'Email',
+    address:      '地址',
+    notFound:     '找不到电话或地址',
+    footerComment: '<!-- 粘贴到 footer -->',
+  },
+};
+
+function getLabels(lang) {
+  return LABELS[lang] || LABELS['en'];
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function today() {
+  return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+}
+
+/** Escape HTML entities for embedding in HTML attributes and tag content */
+function escHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── 1. llms.txt Markdown generator ───────────────────────────────────────────
+
+/**
+ * Generate the full llms.txt Markdown content.
+ * Format reverse-engineered from aeo.washinmura.jp.
+ *
+ * @param {object} data       - LLM extraction result (from llmPipeline.extract)
+ * @param {number} score      - AEO composite score (0–100)
+ * @param {string} slug       - URL slug, e.g. "silinno-com"
+ * @param {string} host       - Platform hostname, e.g. "aeo.yourdomain.com"
+ * @returns {string}          - Complete llms.txt Markdown string
+ */
+function generateLlmsTxt(data, score, slug, host) {
+  const {
+    business_name,
+    tagline,
+    about,
+    features        = [],
+    products_services = [],
+    faq             = [],
+    search_keywords = [],
+    recommendations = [],
+  } = data;
+
+  const date       = today();
+  const profileUrl = `https://${host}/aeo/shops/${slug}/llms.txt`;
+  const platformUrl = `https://${host}`;
+
+  // ── Header ────────────────────────────────────────────────────────────────
+  const header = [
+    `# ${business_name}（${business_name}）`,
+    `> [Verified: ${date} | Score: ${score}/100 | Freshness: Fresh ✓]`,
+    '',
+    `> ${tagline}`,
+    `> ${tagline}`,
+    '',
+    `- URL: https://${data.contact?.url || slug.replace(/-/g, '.')}`,
+  ].join('\n');
+
+  // ── About ─────────────────────────────────────────────────────────────────
+  const aboutSection = `## About\n\n${about}`;
+
+  // ── Features ─────────────────────────────────────────────────────────────
+  const featuresSection =
+    `## Features\n\n` +
+    features.map((f) => `- ${f}`).join('\n');
+
+  // ── Products & Services ───────────────────────────────────────────────────
+  const productsSection =
+    `## Products & Services\n\n` +
+    products_services.map((p) => `- ${p}`).join('\n');
+
+  // ── FAQ ───────────────────────────────────────────────────────────────────
+  const faqSection =
+    `## FAQ\n\n` +
+    faq
+      .map(({ q, a }) => `**Q: ${q}**\nA: ${a}`)
+      .join('\n\n');
+
+  // ── Search Keywords ───────────────────────────────────────────────────────
+  const keywordsSection =
+    `## Search Keywords\n\n` +
+    search_keywords.map((k) => `\`${k}\``).join(' · ');
+
+  // ── How to Make AI Find You ───────────────────────────────────────────────
+  const howToSection =
+    `## How to Make AI Find You\n\n` +
+    recommendations.map((r, i) => `${i + 1}. ${r}`).join('\n');
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  const footer = [
+    '---',
+    '',
+    `*Generated by [${host}](${platformUrl}) | AI-Friendliness Optimization*`,
+    `*Verified profile: ${profileUrl}*`,
+    `*Last scanned: ${date}*`,
+    `*Analyzed by AI ✨*`,
+    '',
+    `> Scan your website's AI-friendliness score for free: ${platformUrl}`,
+  ].join('\n');
+
+  return [
+    header,
+    '',
+    aboutSection,
+    '',
+    featuresSection,
+    '',
+    productsSection,
+    '',
+    faqSection,
+    '',
+    keywordsSection,
+    '',
+    howToSection,
+    '',
+    footer,
+  ].join('\n');
+}
+
+// ── 2. JSON-LD FAQPage generator ─────────────────────────────────────────────
+
+/**
+ * Generate a <script type="application/ld+json"> FAQPage block.
+ * Format matches the schema.org FAQPage specification.
+ *
+ * @param {{ q: string; a: string }[]} faqArray
+ * @returns {string} - Full <script> block ready to embed in <head>
+ */
+function generateFaqJsonLd(faqArray) {
+  if (!faqArray || faqArray.length === 0) return '';
+
+  const schema = {
+    '@context':   'https://schema.org',
+    '@type':      'FAQPage',
+    mainEntity: faqArray.map(({ q, a }) => ({
+      '@type': 'Question',
+      name:    q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text:    a,
+      },
+    })),
+  };
+
+  return (
+    `<script type="application/ld+json">\n` +
+    JSON.stringify(schema, null, 2) +
+    `\n</script>`
+  );
+}
+
+// ── 3. Address HTML generator ─────────────────────────────────────────────────
+
+/**
+ * Generate an <address> footer snippet with localized labels.
+ *
+ * @param {{ phone:string|null, email:string|null, address:string|null }} contact
+ * @param {string} businessName
+ * @param {string} lang  - "en" | "zh-TW" | "zh-CN"
+ * @returns {string}     - HTML snippet ready to embed in footer
+ */
+function generateAddressHtml(contact, businessName, lang = 'en') {
+  const L = getLabels(lang);
+  const { phone, email, address } = contact || {};
+
+  const lines = [`${L.footerComment}`, `<address>`];
+
+  lines.push(`  <strong>${escHtml(businessName)}</strong><br>`);
+
+  if (phone) {
+    const cleanPhone = phone.replace(/\s+/g, '');
+    lines.push(`  ${L.phone}：<a href="tel:${escHtml(cleanPhone)}">${escHtml(phone)}</a><br>`);
+  } else {
+    lines.push(`  ${L.phone}：${L.notFound}<br>`);
+  }
+
+  if (email) {
+    lines.push(`  ${L.email}：<a href="mailto:${escHtml(email)}">${escHtml(email)}</a><br>`);
+  } else {
+    lines.push(`  ${L.email}：${L.notFound}<br>`);
+  }
+
+  lines.push(`  ${L.address}：${address ? escHtml(address) : L.notFound}`);
+  lines.push(`</address>`);
+
+  return lines.join('\n');
+}
+
+// ── 4. llms-txt link tag generator ───────────────────────────────────────────
+
+/**
+ * Generate the <link rel="llms-txt"> tag for embedding in the client's <head>.
+ *
+ * @param {string} slug - URL slug, e.g. "silinno-com"
+ * @param {string} host - Platform hostname
+ * @returns {string}
+ */
+function generateLlmsTxtLinkTag(slug, host) {
+  const href = `https://${host}/aeo/shops/${slug}/llms.txt`;
+  return `<link rel="llms-txt" href="${href}">`;
+}
+
+// ── Exports ───────────────────────────────────────────────────────────────────
+
+module.exports = {
+  generateLlmsTxt,
+  generateFaqJsonLd,
+  generateAddressHtml,
+  generateLlmsTxtLinkTag,
+};
