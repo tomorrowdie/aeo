@@ -1,6 +1,5 @@
-import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   /**
    * Proxy all /api/* and /aeo/* requests to the Express backend.
    * In production on Zeabur, set BACKEND_URL to the internal service URL.
