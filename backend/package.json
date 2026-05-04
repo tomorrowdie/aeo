@@ -6,7 +6,7 @@
   "scripts": {
     "dev":          "nodemon src/index.js",
     "start":        "npx prisma generate && npx prisma db push && node src/index.js",
-    "postinstall":  "prisma generate && npx playwright install chromium --with-deps",
+    "postinstall":  "prisma generate",
     "db:generate":  "prisma generate",
     "db:migrate":   "prisma migrate dev",
     "db:push":      "prisma db push",
