@@ -60,7 +60,8 @@ async function runPipeline(websiteId, normalized, slug, preferredLang) {
     try {
       scraped = await scrape(normalized);
     } catch (err) {
-      console.error('[scan] Scraper error:', err instanceof ScraperError ? err.message : err);
+      console.error('[scan] Scraper error:', err.message);
+      if (err.stack) console.error(err.stack);
       return await markFailed(websiteId);
     }
 
@@ -130,7 +131,8 @@ async function runPipeline(websiteId, normalized, slug, preferredLang) {
 
     console.log(`[scan] Completed: ${slug} (score: ${scoreData.score})`);
   } catch (err) {
-    console.error('[scan] Pipeline error:', err);
+    console.error('[scan] Pipeline error:', err.message);
+    if (err.stack) console.error(err.stack);
     await markFailed(websiteId);
   }
 }
