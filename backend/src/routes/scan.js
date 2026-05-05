@@ -81,7 +81,7 @@ async function runPipeline(websiteId, normalized, slug, preferredLang) {
     const addressHtml    = generateAddressHtml(finalContact, extracted.business_name, lang);
     const llmsTxtLinkTag = generateLlmsTxtLinkTag(slug, host);
 
-    // 5. Persist (atomic transaction)
+    // 5. Persist scan data (atomic: scanResult + aeoContent must succeed together)
     const now = new Date();
     await db.$transaction([
       db.scanResult.create({
@@ -117,17 +117,20 @@ async function runPipeline(websiteId, normalized, slug, preferredLang) {
           lang,
         },
       }),
-      db.website.update({
-        where: { id: websiteId },
-        data: {
-          title:         scraped.title || extracted.business_name || null,
-          score:         scoreData.score,
-          scanStatus:    'COMPLETE',
-          scanCount:     { increment: 1 },
-          lastScannedAt: now,
-        },
-      }),
     ]);
+
+    // 6. Mark website COMPLETE — separate from the transaction so it always runs
+    //    even if the managed-PG connection pool doesn't honour array-transaction atomicity.
+    await db.website.update({
+      where: { id: websiteId },
+      data: {
+        title:         scraped.title || extracted.business_name || null,
+        score:         scoreData.score,
+        scanStatus:    'COMPLETE',
+        scanCount:     { increment: 1 },
+        lastScannedAt: now,
+      },
+    });
 
     console.log(`[scan] Completed: ${slug} (score: ${scoreData.score})`);
   } catch (err) {
@@ -189,6 +192,18 @@ router.get('/api/scan/:id', async (req, res) => {
     });
 
     if (!website) return res.status(404).json({ error: 'Scan record not found' });
+
+    // Defensive: pipeline completed data but status update was lost — self-repair.
+    if (
+      website.scanStatus === 'SCANNING' &&
+      website.aeoContent &&
+      website.scanResults.length > 0
+    ) {
+      await db.website
+        .update({ where: { id }, data: { scanStatus: 'COMPLETE' } })
+        .catch((e) => console.error('[scan] status-repair error:', e.message));
+      website.scanStatus = 'COMPLETE';
+    }
 
     return res.json({
       websiteId:     website.id,
