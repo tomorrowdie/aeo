@@ -105,7 +105,7 @@ export interface LeaderboardData {
 
 // ── Fetch helpers ─────────────────────────────────────────────────────────────
 
-const BASE = typeof window === 'undefined' ? '' : '';
+const BASE = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
 export async function fetchDashboard(): Promise<DashboardData> {
   const res = await fetch(`${BASE}/api/dashboard`, { next: { revalidate: 0 } });

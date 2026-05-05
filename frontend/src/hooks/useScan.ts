@@ -43,7 +43,17 @@ export function useScan(): UseScanReturn {
     }
 
     // Poll every 2 seconds
+    const startTime = Date.now();
+    const TIMEOUT_MS = 120 * 1000;
+
     pollRef.current = setInterval(async () => {
+      if (Date.now() - startTime > TIMEOUT_MS) {
+        stopPolling();
+        setError('Scan timed out. Please try again.');
+        setPhase('failed');
+        return;
+      }
+
       try {
         const poll = await pollScan(websiteId);
         if (poll.status === 'COMPLETE') {
@@ -59,7 +69,7 @@ export function useScan(): UseScanReturn {
       } catch {
         // transient error — keep polling
       }
-    }, 2000);
+    }, 3000);
   }, []);
 
   const reset = useCallback(() => {
