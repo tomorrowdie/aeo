@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
 import { useDashboard }     from '@/hooks/useDashboard';
 import { useScan }          from '@/hooks/useScan';
 import { useLanguage }      from '@/hooks/useLanguage';
@@ -43,6 +45,13 @@ export default function HomePage() {
   const { data: dashboard, loading: dashLoading } = useDashboard(60_000);
   const { phase, result, error, startScan, reset } = useScan();
   const { lang, setLang, t } = useLanguage();
+  const [leaderboardTrigger, setLeaderboardTrigger] = useState(0);
+
+  useEffect(() => {
+    if (phase === 'complete') {
+      setLeaderboardTrigger(prev => prev + 1);
+    }
+  }, [phase]);
 
   const botBreakdown = dashboard?.botBreakdown ?? [];
   const recentLogs   = dashboard?.recentLogs   ?? [];
@@ -100,6 +109,8 @@ export default function HomePage() {
 
           <p className="text-xs text-gray-500 font-medium tracking-wide uppercase mt-2">
             Free scan → AI score → Generate fix code → Get found
+            <span className="mx-2">|</span>
+            <a href="#leaderboard" className="text-[#a855f7] hover:underline font-bold">🏆 View Leaderboard</a>
           </p>
 
           {/* Error */}
@@ -148,7 +159,7 @@ export default function HomePage() {
 
         {/* ── Leaderboard ──────────────────────────────────────────────────────── */}
         <section className="mt-20 w-full max-w-5xl">
-          <LeaderboardSection />
+          <LeaderboardSection refreshTrigger={leaderboardTrigger} />
         </section>
 
         {/* ── Footer ───────────────────────────────────────────────────────────── */}

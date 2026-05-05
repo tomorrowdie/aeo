@@ -120,8 +120,9 @@ export async function postScan(url: string, lang = 'en'): Promise<ScanInit> {
     body: JSON.stringify({ url, lang }),
   });
   if (!res.ok) {
+    console.error(`[postScan] Backend returned ${res.status} ${res.statusText}`);
     const body = await res.json().catch(() => ({}));
-    throw new Error((body as { error?: string }).error ?? 'Scan failed');
+    throw new Error((body as { error?: string }).error ?? `Scan failed with status ${res.status}`);
   }
   return res.json();
 }

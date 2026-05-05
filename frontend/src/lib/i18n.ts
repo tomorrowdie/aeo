@@ -26,7 +26,12 @@ export const i18n = {
     overviewMissing: "Missing Signals",
     recommendationsTitle: "💡 AI Recommendations",
     botGridTitle: "Recently visited by AI",
-    footerText: "AI-Friendliness Optimization · Free Scan"
+    footerText: "AI-Friendliness Optimization · Free Scan",
+    inputHelper: "You can enter a full URL or just a domain, e.g. example.com.",
+    errorInvalidUrl: "Invalid URL format. Please check and try again.",
+    errorNetwork: "Network error or server unavailable. Please try again later.",
+    errorTimeout: "Scan timed out. Please try again.",
+    errorFailed: "Scan failed. The website may block automated crawlers or the page may not be reachable."
   },
   'zh-HK': {
     heroTitle: "AEO 掃描器",
@@ -53,7 +58,12 @@ export const i18n = {
     overviewMissing: "缺失訊號",
     recommendationsTitle: "💡 AI 改善建議",
     botGridTitle: "最近來訪的 AI",
-    footerText: "AEO 最佳化 · 免費掃描"
+    footerText: "AEO 最佳化 · 免費掃描",
+    inputHelper: "你可以輸入完整網址，或者只輸入網域，例如 example.com。",
+    errorInvalidUrl: "網址格式無效，請檢查後重試。",
+    errorNetwork: "網路連線失敗，或伺服器不可用。請稍後再試。",
+    errorTimeout: "掃描逾時，請重試。",
+    errorFailed: "掃描失敗。網站可能封鎖了自動抓取工具，或頁面無法存取。"
   },
   'zh-CN': {
     heroTitle: "AEO 扫描器",
@@ -80,7 +90,12 @@ export const i18n = {
     overviewMissing: "缺失信号",
     recommendationsTitle: "💡 AI 改进建议",
     botGridTitle: "最近来访的 AI",
-    footerText: "AEO 优化 · 免费扫描"
+    footerText: "AEO 优化 · 免费扫描",
+    inputHelper: "你可以输入完整网址，或者只输入域名，例如 example.com。",
+    errorInvalidUrl: "网址格式无效，请检查后重试。",
+    errorNetwork: "网络连接失败，或者服务器不可用。请稍后再试。",
+    errorTimeout: "扫描超时，请重试。",
+    errorFailed: "扫描失败。网站可能屏蔽了自动抓取工具，或者页面无法访问。"
   }
 };
 

@@ -97,16 +97,21 @@ function NewcomerRow({ shop, rank }: { shop: ShopSummary; rank: number }) {
   );
 }
 
-export default function LeaderboardSection() {
+interface Props {
+  refreshTrigger?: number;
+}
+
+export default function LeaderboardSection({ refreshTrigger = 0 }: Props) {
   const [data, setData]       = useState<LeaderboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetchLeaderboard().then(setData).catch(() => {}).finally(() => setLoading(false));
-  }, []);
+  }, [refreshTrigger]);
 
   return (
-    <section className="w-full max-w-5xl">
+    <section id="leaderboard" className="w-full max-w-5xl">
       <h2 className="mb-2 text-center text-3xl font-bold text-white">
         🏆 <span className="text-[#00ff88]">Leaderboard</span>
       </h2>
