@@ -1,0 +1,8 @@
+node_modules
+.next
+build.log
+build2.log
+.env
+.env.local
+.git
+.gitignore
