@@ -43,7 +43,7 @@ export default function ScoreCard({ result, onRescan }: Props) {
       {/* Link to shop page */}
       {result.slug && (
         <a
-          href={`/aeo/shops/${result.slug}`}
+          href={`${process.env.NEXT_PUBLIC_BACKEND_URL || ''}/aeo/shops/${result.slug}`}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-3 inline-flex items-center gap-2 rounded-lg border border-[#374151] bg-[#0d0f1a] px-4 py-2 text-sm text-[#00ff88] hover:border-[#00ff88] transition-colors"

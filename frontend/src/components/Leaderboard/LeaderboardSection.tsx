@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { fetchLeaderboard, type ShopSummary, type LeaderboardData } from '@/lib/api';
 
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+
 function scoreColor(score: number | null): string {
   if (!score) return '#6b7280';
   if (score >= 80) return '#00ff88';
@@ -34,7 +36,7 @@ function ShopRow({ shop, rank }: { shop: ShopSummary; rank: number }) {
   const isTop3 = rank <= 3;
   return (
     <a
-      href={`/aeo/shops/${shop.slug}`}
+      href={`${backendUrl}/aeo/shops/${shop.slug}`}
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center gap-3 rounded-xl border border-[#374151] bg-[#111827] p-4 hover:border-[#374151] hover:bg-[#1f2937] transition-colors"
@@ -71,7 +73,7 @@ function NewcomerRow({ shop, rank }: { shop: ShopSummary; rank: number }) {
   const color = scoreColor(shop.score);
   return (
     <a
-      href={`/aeo/shops/${shop.slug}`}
+      href={`${backendUrl}/aeo/shops/${shop.slug}`}
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center gap-3 rounded-xl border border-[#374151] bg-[#111827] p-4 hover:bg-[#1f2937] transition-colors"

@@ -10,6 +10,7 @@ import ScanInputCard        from '@/components/Scanner/ScanInputCard';
 import BotGrid              from '@/components/Dashboard/BotGrid';
 import LogFeed              from '@/components/Dashboard/LogFeed';
 import ScoreCard            from '@/components/Results/ScoreCard';
+import ScoreBreakdown       from '@/components/Results/ScoreBreakdown';
 import OutputTabs           from '@/components/Results/OutputTabs';
 import LeaderboardSection   from '@/components/Leaderboard/LeaderboardSection';
 import LanguageSwitcher     from '@/components/LanguageSwitcher';
@@ -136,12 +137,19 @@ export default function HomePage() {
 
         {/* ── Scan Result ─────────────────────────────────────────────────────── */}
         {phase === 'complete' && result && (
-          <section className="mt-16 flex flex-col items-center w-full max-w-4xl animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="w-full max-w-2xl mx-auto">
-              <ScoreCard result={result} onRescan={reset} />
+          <section className="mt-16 w-full max-w-6xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+              {/* Left Column: Output Tabs */}
+              <div className="lg:col-span-2 w-full">
+                <OutputTabs result={result} />
+              </div>
+              
+              {/* Right Column: Quick Status & Score */}
+              <div className="lg:col-span-1 flex flex-col gap-6 w-full">
+                <ScoreCard result={result} onRescan={reset} />
+                <ScoreBreakdown result={result} />
+              </div>
             </div>
-            
-            <OutputTabs result={result} />
           </section>
         )}
 
