@@ -19,23 +19,23 @@ export default function ScoreCard({ result, onRescan }: Props) {
   const color = scoreColor(score);
 
   return (
-    <div className="w-full max-w-2xl rounded-2xl border border-[#374151] bg-[#111827] p-8 text-center">
+    <div className="w-full max-w-2xl rounded-2xl border border-border bg-card p-8 text-center">
       {/* Score */}
       <div className="text-5xl font-bold" style={{ color }}>
-        {score}<span className="text-3xl text-gray-400">/100</span>
+        {score}<span className="text-3xl text-muted-foreground">/100</span>
       </div>
 
       {/* Rescan button */}
       <button
         onClick={onRescan}
-        className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-[#374151] bg-[#1f2937] px-4 py-2 text-sm text-gray-300 hover:border-[#a855f7] hover:text-white transition-colors"
+        className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted px-4 py-2 text-sm text-foreground hover:border-purple-500 hover:text-purple-500 transition-colors"
       >
         🔄 重新掃描
       </button>
 
       {/* Business name */}
       {result.aeoContent?.businessName && (
-        <div className="mt-4 text-lg font-semibold text-white">
+        <div className="mt-4 text-lg font-semibold text-foreground">
           {result.aeoContent.businessName}
         </div>
       )}
@@ -46,10 +46,10 @@ export default function ScoreCard({ result, onRescan }: Props) {
           href={`${process.env.NEXT_PUBLIC_BACKEND_URL || ''}/aeo/shops/${result.slug}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center gap-2 rounded-lg border border-[#374151] bg-[#0d0f1a] px-4 py-2 text-sm text-[#00ff88] hover:border-[#00ff88] transition-colors"
+          className="mt-3 inline-flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm text-success hover:border-success transition-colors"
         >
           📋 Your AEO business page is ready
-          <span className="text-gray-400">View page →</span>
+          <span className="text-muted-foreground">View page →</span>
         </a>
       )}
     </div>

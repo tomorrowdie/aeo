@@ -9,22 +9,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Core dark theme surfaces
-        'aeo-bg':      '#0d0f1a',
-        'aeo-surface': '#111827',
-        'aeo-card':    '#1f2937',
-        'aeo-border':  '#374151',
-        // Accent colors (matching the reference UI)
-        'aeo-green':   '#00ff88',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        card: 'var(--card)',
+        'card-foreground': 'var(--card-foreground)',
+        muted: 'var(--muted)',
+        'muted-foreground': 'var(--muted-foreground)',
+        border: 'var(--border)',
+        success: 'var(--success)',
+        danger: 'var(--danger)',
+        warning: 'var(--warning)',
+        // Keeping legacy accent colors
+        'aeo-green':   'var(--success)',
         'aeo-purple':  '#a855f7',
-        'aeo-yellow':  '#eab308',
-        'aeo-red':     '#ef4444',
+        'aeo-yellow':  'var(--warning)',
+        'aeo-red':     'var(--danger)',
         'aeo-orange':  '#f97316',
       },
       fontFamily: {
         sans: [
-          'Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"',
-          '"Noto Sans CJK SC"', '"Noto Sans CJK TC"', 'sans-serif',
+          '-apple-system', 'BlinkMacSystemFont', '"Inter"', '"Noto Sans"', '"Noto Sans HK"', '"Noto Sans TC"', '"Noto Sans SC"', '"Segoe UI"', 'sans-serif',
         ],
         mono: ['"JetBrains Mono"', '"Fira Code"', 'Menlo', 'monospace'],
       },

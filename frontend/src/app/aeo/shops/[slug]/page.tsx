@@ -139,15 +139,15 @@ export default async function ShopPage({ params }: { params: { slug: string } })
       </nav>
 
       {/* Title */}
-      <h1 className="text-2xl font-bold text-[#eab308]">{name}</h1>
+      <h1 className="text-2xl font-bold text-warning">{name}</h1>
 
       {/* Score badge */}
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <span className="rounded-lg bg-[#78350f] px-3 py-1 text-sm font-semibold text-[#eab308]">
+        <span className="rounded-lg bg-warning/20 px-3 py-1 text-sm font-semibold text-warning border border-warning/30">
           AEO Score: {data.score ?? '?'}/100
         </span>
         {data.lastScannedAt && (
-          <span className="text-sm text-gray-400">
+          <span className="text-sm text-muted-foreground">
             Last Scanned: {new Date(data.lastScannedAt).toISOString().split('T')[0]}
           </span>
         )}
@@ -156,7 +156,7 @@ export default async function ShopPage({ params }: { params: { slug: string } })
       {/* AEO scan results grid */}
       {scan && (
         <section className="mt-8">
-          <h2 className="mb-4 text-lg font-semibold text-white">
+          <h2 className="mb-4 text-lg font-semibold text-foreground">
             AEO Scan Results ({
               [scan.hasJsonLd, scan.hasLlmsTxt, scan.hasOgTags, scan.hasMetaDesc,
                scan.hasFaqSchema, scan.hasTitle, (scan.hasPhone || scan.hasEmail), scan.hasImages]
@@ -180,7 +180,7 @@ export default async function ShopPage({ params }: { params: { slug: string } })
       {c?.llmsTxt && (
         <a
           href={`/aeo/shops/${data.slug}/llms.txt`}
-          className="mt-4 inline-block text-sm text-[#00ff88] hover:underline"
+          className="mt-4 inline-block text-sm text-success hover:underline"
         >
           AI-Readable Structured Profile →
         </a>
@@ -190,20 +190,20 @@ export default async function ShopPage({ params }: { params: { slug: string } })
       {c && (
         <section className="mt-10 flex flex-col gap-6">
           {c.tagline && (
-            <p className="text-gray-300 italic border-l-2 border-[#a855f7] pl-4">{c.tagline}</p>
+            <p className="text-foreground italic border-l-2 border-purple-500 pl-4">{c.tagline}</p>
           )}
 
           {c.about && (
             <div>
-              <h3 className="mb-2 font-semibold text-white">About</h3>
-              <p className="text-sm text-gray-400 leading-relaxed">{c.about}</p>
+              <h3 className="mb-2 font-semibold text-foreground">About</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{c.about}</p>
             </div>
           )}
 
           {c.features.length > 0 && (
             <div>
-              <h3 className="mb-2 font-semibold text-white">Key Features</h3>
-              <ul className="list-disc list-inside text-sm text-gray-400 space-y-1">
+              <h3 className="mb-2 font-semibold text-foreground">Key Features</h3>
+              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                 {c.features.map((f, i) => <li key={i}>{f}</li>)}
               </ul>
             </div>
@@ -211,10 +211,10 @@ export default async function ShopPage({ params }: { params: { slug: string } })
 
           {c.productsServices.length > 0 && (
             <div>
-              <h3 className="mb-2 font-semibold text-white">Products & Services</h3>
+              <h3 className="mb-2 font-semibold text-foreground">Products & Services</h3>
               <div className="flex flex-wrap gap-2">
                 {c.productsServices.map((p, i) => (
-                  <span key={i} className="rounded-lg border border-[#374151] px-3 py-1 text-xs text-gray-300">
+                  <span key={i} className="rounded-lg border border-border px-3 py-1 text-xs text-foreground bg-muted/50">
                     {p}
                   </span>
                 ))}
@@ -224,12 +224,12 @@ export default async function ShopPage({ params }: { params: { slug: string } })
 
           {c.faq.length > 0 && (
             <div>
-              <h3 className="mb-3 font-semibold text-white">FAQ</h3>
+              <h3 className="mb-3 font-semibold text-foreground">FAQ</h3>
               <div className="flex flex-col gap-3">
                 {c.faq.map((item, i) => (
-                  <div key={i} className="rounded-xl border border-[#374151] bg-[#111827] p-4">
-                    <div className="font-medium text-white text-sm">{item.q}</div>
-                    <div className="mt-1 text-xs text-gray-400 leading-relaxed">{item.a}</div>
+                  <div key={i} className="rounded-xl border border-border bg-card p-4">
+                    <div className="font-medium text-foreground text-sm">{item.q}</div>
+                    <div className="mt-1 text-xs text-muted-foreground leading-relaxed">{item.a}</div>
                   </div>
                 ))}
               </div>
@@ -239,20 +239,20 @@ export default async function ShopPage({ params }: { params: { slug: string } })
       )}
 
       {/* Evidence & Sources */}
-      <section className="mt-10 rounded-2xl border border-[#374151] bg-[#111827] p-6">
-        <h3 className="mb-4 font-semibold text-[#00ff88]">🔗 Evidence &amp; Sources</h3>
-        <ul className="flex flex-col gap-2 text-sm text-gray-300">
+      <section className="mt-10 rounded-2xl border border-border bg-card p-6">
+        <h3 className="mb-4 font-semibold text-success">🔗 Evidence &amp; Sources</h3>
+        <ul className="flex flex-col gap-2 text-sm text-foreground">
           {c?.llmsTxt && (
             <li>
               ✓{' '}
-              <a href={`/aeo/shops/${data.slug}/llms.txt`} className="text-[#00ff88] hover:underline">
+              <a href={`/aeo/shops/${data.slug}/llms.txt`} className="text-success hover:underline">
                 AI-Readable Structured Profile
               </a>
             </li>
           )}
           <li>
             ✓ Official Website:{' '}
-            <a href={data.url} target="_blank" rel="noopener noreferrer" className="text-[#00ff88] hover:underline">
+            <a href={data.url} target="_blank" rel="noopener noreferrer" className="text-success hover:underline">
               {data.url}
             </a>
           </li>

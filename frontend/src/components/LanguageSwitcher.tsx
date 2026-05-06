@@ -18,10 +18,10 @@ export default function LanguageSwitcher({
 }) {
   return (
     <Select value={currentLang} onValueChange={(val) => setLang(val as Language)}>
-      <SelectTrigger className="w-[120px] bg-transparent border-[#374151] text-xs">
+      <SelectTrigger className="w-[120px] bg-transparent border-border text-xs">
         <SelectValue placeholder="Language" />
       </SelectTrigger>
-      <SelectContent className="bg-[#111827] border-[#374151] text-gray-300">
+      <SelectContent className="bg-card border-border text-foreground">
         <SelectItem value="en">English</SelectItem>
         <SelectItem value="zh-HK">繁體中文</SelectItem>
         <SelectItem value="zh-CN">简体中文</SelectItem>

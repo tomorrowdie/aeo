@@ -22,23 +22,23 @@ interface CategoryRowProps {
 function CategoryRow({ icon, label, score, pass, passMsg, failMsg, gainPts }: CategoryRowProps) {
   const color = scoreColor(score);
   return (
-    <div className="flex items-start gap-4 py-4 border-b border-[#1f2937] last:border-0">
+    <div className="flex items-start gap-4 py-4 border-b border-border last:border-0">
       {/* Icon */}
       <span className="text-xl mt-0.5 shrink-0">{icon}</span>
 
       {/* Score + Label */}
       <div className="w-32 shrink-0">
         <span className="text-2xl font-bold" style={{ color }}>{score}</span>
-        <span className="ml-2 font-semibold text-white">{label}</span>
+        <span className="ml-2 font-semibold text-foreground">{label}</span>
       </div>
 
       {/* Status */}
       <div className="flex-1">
-        <div className={`text-sm ${pass ? 'text-gray-300' : 'text-red-400'}`}>
+        <div className={`text-sm ${pass ? 'text-foreground' : 'text-danger'}`}>
           {pass ? `✅ ${passMsg}` : `❌ ${failMsg}`}
         </div>
         {!pass && gainPts && (
-          <div className="mt-1 text-xs text-[#a855f7]">
+          <div className="mt-1 text-xs text-purple-500">
             Complete Step 1 for instant {gainPts} →
           </div>
         )}
@@ -107,10 +107,10 @@ export default function ScoreBreakdown({ result }: Props) {
   ];
 
   return (
-    <div className="w-full max-w-2xl rounded-2xl border border-[#374151] bg-[#111827] overflow-hidden">
+    <div className="w-full max-w-2xl rounded-2xl border border-border bg-card overflow-hidden">
       {/* Header */}
-      <div className="border-b border-[#374151] px-6 py-4 text-center">
-        <span className="font-semibold text-white">📊 Score Breakdown</span>
+      <div className="border-b border-border px-6 py-4 text-center">
+        <span className="font-semibold text-foreground">📊 Score Breakdown</span>
       </div>
 
       <div className="px-6">

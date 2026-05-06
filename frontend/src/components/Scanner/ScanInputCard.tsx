@@ -53,12 +53,12 @@ export default function ScanInputCard({ phase, onScan, onReset, defaultValue = '
           placeholder={t.inputPlaceholder}
           disabled={scanning}
           required
-          className="flex-1 h-14 bg-[#111827] border-[#374151] text-white text-base rounded-xl placeholder:text-gray-500 focus-visible:ring-[#a855f7]"
+          className="flex-1 h-14 bg-card border-border text-foreground text-base rounded-xl placeholder:text-muted-foreground focus-visible:ring-purple-500"
         />
         <Button
           type="submit"
           disabled={scanning || !url.trim()}
-          className="h-14 px-8 rounded-xl bg-[#a855f7] hover:bg-[#9333ea] text-white font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+          className="h-14 px-8 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
         >
           {scanning ? (
             <>
@@ -78,7 +78,7 @@ export default function ScanInputCard({ phase, onScan, onReset, defaultValue = '
       )}
       {scanning && (
         <p className="text-sm text-gray-400 pl-1 mt-1 text-center sm:text-left">
-          Scanning: <span className="text-[#a855f7]">{normalizeUrl(url).substring(0, 50)}</span>
+          Scanning: <span className="text-purple-500">{normalizeUrl(url).substring(0, 50)}</span>
         </p>
       )}
     </div>

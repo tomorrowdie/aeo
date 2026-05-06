@@ -39,24 +39,24 @@ function ShopRow({ shop, rank }: { shop: ShopSummary; rank: number }) {
       href={`${backendUrl}/aeo/shops/${shop.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 rounded-xl border border-[#374151] bg-[#111827] p-4 hover:border-[#374151] hover:bg-[#1f2937] transition-colors"
+      className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 hover:bg-muted transition-colors"
     >
       {/* Rank */}
-      <div className={`w-8 shrink-0 text-center font-bold ${isTop3 ? 'text-xl' : 'text-gray-400'}`}>
+      <div className={`w-8 shrink-0 text-center font-bold ${isTop3 ? 'text-xl text-foreground' : 'text-muted-foreground'}`}>
         {medal(rank)}
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-white text-sm truncate">
+        <div className="font-semibold text-foreground text-sm truncate">
           {shop.title || shop.url}
         </div>
-        <div className="text-xs text-gray-500 truncate">{shop.url}</div>
+        <div className="text-xs text-muted-foreground truncate">{shop.url}</div>
       </div>
 
       {/* Category */}
       {shop.category && (
-        <span className="shrink-0 rounded-lg border border-[#374151] px-2 py-0.5 text-xs text-gray-400">
+        <span className="shrink-0 rounded-lg border border-border bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
           {shop.category}
         </span>
       )}
@@ -76,19 +76,19 @@ function NewcomerRow({ shop, rank }: { shop: ShopSummary; rank: number }) {
       href={`${backendUrl}/aeo/shops/${shop.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 rounded-xl border border-[#374151] bg-[#111827] p-4 hover:bg-[#1f2937] transition-colors"
+      className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 hover:bg-muted transition-colors"
     >
-      <div className="w-6 shrink-0 text-center font-bold text-gray-400 text-sm">{rank}</div>
+      <div className="w-6 shrink-0 text-center font-bold text-muted-foreground text-sm">{rank}</div>
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-white text-sm truncate">
+        <div className="font-semibold text-foreground text-sm truncate">
           {shop.title || shop.url}
         </div>
-        <div className="text-xs text-gray-500 truncate">
+        <div className="text-xs text-muted-foreground truncate">
           {shop.url} · {timeAgo(shop.createdAt)}
         </div>
       </div>
       {shop.category && (
-        <span className="shrink-0 rounded-lg border border-[#374151] px-2 py-0.5 text-xs text-gray-400">
+        <span className="shrink-0 rounded-lg border border-border bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
           {shop.category}
         </span>
       )}
@@ -114,32 +114,32 @@ export default function LeaderboardSection({ refreshTrigger = 0 }: Props) {
 
   return (
     <section id="leaderboard" className="w-full max-w-5xl">
-      <h2 className="mb-2 text-center text-3xl font-bold text-white">
-        🏆 <span className="text-[#00ff88]">Leaderboard</span>
+      <h2 className="mb-2 text-center text-3xl font-bold text-foreground">
+        🏆 <span className="text-success">Leaderboard</span>
       </h2>
-      <p className="mb-8 text-center text-sm text-gray-400">
+      <p className="mb-8 text-center text-sm text-muted-foreground">
         AI-Friendliness TOP 10 — Most likely to be recommended by AI
       </p>
 
       {loading ? (
-        <div className="text-center text-gray-500">Loading…</div>
+        <div className="text-center text-muted-foreground">Loading…</div>
       ) : !data ? (
-        <div className="text-center text-gray-500">Failed to load leaderboard.</div>
+        <div className="text-center text-muted-foreground">Failed to load leaderboard.</div>
       ) : (
         <div className="grid md:grid-cols-2 gap-8">
           {/* Top 10 */}
           <div>
             <div className="mb-3 flex items-center gap-2">
-              <span className="text-[#eab308]">📁</span>
-              <span className="font-semibold text-gray-200">全部排行</span>
-              <span className="rounded-full bg-[#1f2937] px-2 py-0.5 text-xs text-gray-400">TOP 10</span>
+              <span className="text-warning">📁</span>
+              <span className="font-semibold text-foreground">全部排行</span>
+              <span className="rounded-full bg-muted border border-border px-2 py-0.5 text-xs text-muted-foreground">TOP 10</span>
             </div>
             <div className="flex flex-col gap-2">
               {data.topTen.map((shop, i) => (
                 <ShopRow key={shop.id} shop={shop} rank={i + 1} />
               ))}
               {data.topTen.length === 0 && (
-                <div className="text-center text-sm text-gray-500 py-4">No data yet.</div>
+                <div className="text-center text-sm text-muted-foreground py-4">No data yet.</div>
               )}
             </div>
           </div>
@@ -148,15 +148,15 @@ export default function LeaderboardSection({ refreshTrigger = 0 }: Props) {
           <div>
             <div className="mb-3 flex items-center gap-2">
               <span>🆕</span>
-              <span className="font-semibold text-gray-200">Newcomers</span>
-              <span className="rounded-full bg-[#1f2937] px-2 py-0.5 text-xs text-gray-400">10 NEW</span>
+              <span className="font-semibold text-foreground">Newcomers</span>
+              <span className="rounded-full bg-muted border border-border px-2 py-0.5 text-xs text-muted-foreground">10 NEW</span>
             </div>
             <div className="flex flex-col gap-2">
               {data.newcomers.map((shop, i) => (
                 <NewcomerRow key={shop.id} shop={shop} rank={i + 1} />
               ))}
               {data.newcomers.length === 0 && (
-                <div className="text-center text-sm text-gray-500 py-4">No data yet.</div>
+                <div className="text-center text-sm text-muted-foreground py-4">No data yet.</div>
               )}
             </div>
           </div>

@@ -3,35 +3,62 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Base ─────────────────────────────────────────────────────────────────── */
-
-:root {
-  --bg:      #0d0f1a;
-  --surface: #111827;
-  --card:    #1f2937;
-  --border:  #374151;
-  --green:   #00ff88;
-  --purple:  #a855f7;
-  --yellow:  #eab308;
-}
-
-html,
-body {
-  background-color: var(--bg);
-  color: #f9fafb;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  :root {
+    --background: #fffaf3;
+    --foreground: #2b1206;
+    --card: #ffffff;
+    --card-foreground: #2b1206;
+    --muted: #f0d7c2;
+    --muted-foreground: #7c5a44;
+    --border: #f0d7c2;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --warning: #ea580c;
+  }
+  .dark {
+    --background: #020617;
+    --foreground: #f8fafc;
+    --card: #111827;
+    --card-foreground: #f9fafb;
+    --muted: #1f2937;
+    --muted-foreground: #94a3b8;
+    --border: #334155;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+  }
+  .light {
+    --background: #fffaf3;
+    --foreground: #2b1206;
+    --card: #ffffff;
+    --card-foreground: #2b1206;
+    --muted: #f0d7c2;
+    --muted-foreground: #7c5a44;
+    --border: #f0d7c2;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --warning: #ea580c;
+  }
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Noto Sans", "Noto Sans HK", "Noto Sans TC", "Noto Sans SC", "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
 /* ── Scrollbar ────────────────────────────────────────────────────────────── */
-
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+::-webkit-scrollbar-track { background: var(--card); }
+::-webkit-scrollbar-thumb { background: var(--muted-foreground); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--foreground); }
 
 /* ── Gradient text (for "AI" in the hero heading) ────────────────────────── */
-
 .gradient-text {
   background: linear-gradient(135deg, #06b6d4 0%, #00ff88 100%);
   -webkit-background-clip: text;
@@ -40,12 +67,11 @@ body {
 }
 
 /* ── Animated live dot ────────────────────────────────────────────────────── */
-
 .live-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--green);
+  background-color: var(--success);
   display: inline-block;
   animation: livePulse 2s ease-in-out infinite;
 }
@@ -56,13 +82,11 @@ body {
 }
 
 /* ── Score ring (used in ScoreCard) ──────────────────────────────────────── */
-
 .score-ring {
   transition: stroke-dashoffset 1s ease-out;
 }
 
 /* ── Ticker bar ──────────────────────────────────────────────────────────── */
-
 .ticker-inner {
   display: flex;
   white-space: nowrap;
@@ -75,62 +99,6 @@ body {
 }
 
 /* ── Card hover glow ─────────────────────────────────────────────────────── */
-
 .card-glow:hover {
   box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.3), 0 4px 20px rgba(168, 85, 247, 0.1);
-}
-
-@layer base {
-  .theme {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
-  }
-  :root {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --radius: 0.625rem;
-  }
-  .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-  }
-  * {
-    border-color: var(--border);
-  }
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-  }
 }

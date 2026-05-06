@@ -25,31 +25,31 @@ export default function MetricCards({ data, loading }: Props) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-3xl">
       {/* AI Visits */}
-      <div className="rounded-2xl border border-[#374151] bg-[#111827] p-5 text-center">
-        <div className="text-3xl font-bold text-[#00ff88]">
+      <div className="rounded-2xl border border-border bg-card p-5 text-center">
+        <div className="text-3xl font-bold text-success">
           {placeholder ? '—' : data.totalVisits.toLocaleString()}
         </div>
         <div className="mt-1 text-sm text-gray-400">AI Visits</div>
       </div>
 
       {/* Last 24h */}
-      <div className="rounded-2xl border border-[#374151] bg-[#111827] p-5 text-center">
-        <div className="text-3xl font-bold text-[#00ff88]">
+      <div className="rounded-2xl border border-border bg-card p-5 text-center">
+        <div className="text-3xl font-bold text-success">
           {placeholder ? '—' : data.last24h.toLocaleString()}
         </div>
         <div className="mt-1 text-sm text-gray-400">Last 24h</div>
       </div>
 
       {/* Active Bots */}
-      <div className="rounded-2xl border border-[#374151] bg-[#111827] p-5 text-center">
-        <div className="text-3xl font-bold text-[#00ff88]">
+      <div className="rounded-2xl border border-border bg-card p-5 text-center">
+        <div className="text-3xl font-bold text-success">
           {placeholder ? '—' : data.activeBotCount}
         </div>
         <div className="mt-1 text-sm text-gray-400">Active Bots</div>
       </div>
 
       {/* Last Visit */}
-      <div className="rounded-2xl border border-[#374151] bg-[#111827] p-5 text-center">
+      <div className="rounded-2xl border border-border bg-card p-5 text-center">
         <div className="flex items-center justify-center gap-1.5 text-base font-semibold text-white">
           {!placeholder && data.lastVisitAt && (
             <span className="live-dot" />
