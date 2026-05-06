@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { ScanPollResult } from '@/lib/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import CopyButton from './CopyButton';
+import AgentReadinessTab from './AgentReadinessTab';
 
 function renderRecommendation(rec: unknown): string {
   if (typeof rec === 'string') return rec;
@@ -52,6 +53,7 @@ export default function OutputTabs({ result }: Props) {
             <TabsTrigger value="overview" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabOverview}</TabsTrigger>
             <TabsTrigger value="llmstxt" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabLlmsTxt}</TabsTrigger>
             <TabsTrigger value="faq" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabFaq}</TabsTrigger>
+            <TabsTrigger value="agent-readiness" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">Agent Readiness</TabsTrigger>
             <TabsTrigger value="recommendations" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabRecommendations}</TabsTrigger>
             <TabsTrigger value="embed" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabEmbed}</TabsTrigger>
           </TabsList>
@@ -134,6 +136,10 @@ export default function OutputTabs({ result }: Props) {
             <div className="bg-muted/50 border border-border rounded-xl p-6 max-h-[600px] overflow-auto">
               <pre className="font-mono text-foreground whitespace-pre-wrap break-words leading-relaxed">{aeo.faqJsonLd}</pre>
             </div>
+          </TabsContent>
+
+          <TabsContent value="agent-readiness" className="mt-0 outline-none">
+            <AgentReadinessTab ar={aeo.agentReadiness} />
           </TabsContent>
 
           <TabsContent value="recommendations" className="mt-0 outline-none flex flex-col gap-6">
