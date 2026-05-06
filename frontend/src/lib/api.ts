@@ -13,6 +13,7 @@ export interface LogEntry {
   company: string;
   path: string;
   status: number;
+  requestType?: 'ai_discovery' | 'security_probe';
   ts: string;
 }
 
@@ -56,6 +57,69 @@ export interface ScanResult {
   scannedAt: string;
 }
 
+export type AgentReadinessStatus = 'pass' | 'fail' | 'warning' | 'future';
+export type AgentReadinessPriority = 'critical' | 'high' | 'medium' | 'low' | 'future';
+export type AgentReadinessDifficulty = 'easy' | 'medium' | 'hard';
+
+export interface AgentReadinessCheck {
+  id: string;
+  label: string;
+  category: string;
+  status: AgentReadinessStatus;
+  scoreImpact: number;
+  scoreAwarded: number;
+  priority: AgentReadinessPriority;
+  evidence?: string;
+  detectedUrl?: string;
+  detectedValue?: string;
+  informational?: boolean;
+  details?: Record<string, unknown>;
+}
+
+export interface AgentReadinessRecommendation {
+  id: string;
+  checkId: string;
+  title: string;
+  category: string;
+  status: AgentReadinessStatus;
+  priority: AgentReadinessPriority;
+  difficulty: AgentReadinessDifficulty;
+  goal: string;
+  issue: string;
+  whyItMatters: string;
+  fix: string;
+  developerTasks: string[];
+  copyableFix?: string;
+}
+
+export interface AgentReadinessCategory {
+  id: string;
+  label: string;
+  score: number;
+  passed: number;
+  total: number;
+  weight: number;
+  checks: AgentReadinessCheck[];
+}
+
+export interface AgentReadinessResult {
+  schemaVersion: 'v1';
+  scannedAt: string;
+  score: number;
+  agentReadinessScore: number;
+  level: string;
+  summary: string;
+  categories: Record<string, AgentReadinessCategory>;
+  checks: AgentReadinessCheck[];
+  agentReadinessChecks: AgentReadinessCheck[];
+  recommendations: AgentReadinessRecommendation[];
+  agentReadinessRecommendations: AgentReadinessRecommendation[];
+  copyAllInstructionsMarkdown: string;
+  informationalChecks?: AgentReadinessCheck[];
+  warnings?: { id: string; evidence?: string }[];
+  aeo_site_readiness_packet?: Record<string, unknown>;
+}
+
 export interface AeoContent {
   llmsTxt: string;
   faqJsonLd: string;
@@ -70,6 +134,7 @@ export interface AeoContent {
   searchKeywords: string[];
   recommendations: string[];
   contact: { phone: string | null; email: string | null; address: string | null };
+  agentReadiness?: AgentReadinessResult | null;
   lang: string;
 }
 
@@ -83,6 +148,7 @@ export interface ScanPollResult {
   lastScannedAt: string | null;
   latestScan: ScanResult | null;
   aeoContent: AeoContent | null;
+  agentReadiness?: AgentReadinessResult | null;
 }
 
 // ── Leaderboard ───────────────────────────────────────────────────────────────

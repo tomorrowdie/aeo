@@ -7,6 +7,7 @@ const { urlToSlug, canonicalizeUrl }  = require('../lib/slug');
 const { scrape, ScraperError }        = require('../services/scraper');
 const { score }                       = require('../services/scorer');
 const { extract }                     = require('../services/llmPipeline');
+const { runAgentReadinessChecks }     = require('../services/agentReadiness');
 const {
   generateLlmsTxt,
   generateFaqJsonLd,
@@ -53,7 +54,7 @@ async function markFailed(websiteId) {
 
 // ── Background pipeline ───────────────────────────────────────────────────────
 
-async function runPipeline(websiteId, normalized, slug, preferredLang) {
+async function runPipeline(websiteId, normalized, canonical, slug, preferredLang) {
   try {
     // 1. Scrape
     let scraped;
@@ -80,6 +81,21 @@ async function runPipeline(websiteId, normalized, slug, preferredLang) {
     const faqJsonLd      = generateFaqJsonLd(extracted.faq);
     const addressHtml    = generateAddressHtml(finalContact, extracted.business_name, lang);
     const llmsTxtLinkTag = generateLlmsTxtLinkTag(slug, host);
+    const generatedAssets = { llmsTxt, faqJsonLd, addressHtml, llmsTxtLinkTag };
+
+    // 4.5. Agent Readiness checks are additive and must never fail the scan.
+    const agentReadiness = await runAgentReadinessChecks({
+      normalizedUrl: normalized,
+      canonicalUrl: canonical,
+      slug,
+      scoreData,
+      scraped,
+      extracted: { ...extracted, lang },
+      generatedAssets,
+    }).catch((err) => {
+      console.warn('[scan] Agent Readiness checks failed gracefully:', err.message);
+      return null;
+    });
 
     // 5. Persist scan data (atomic: scanResult + aeoContent must succeed together)
     const now = new Date();
@@ -100,6 +116,7 @@ async function runPipeline(websiteId, normalized, slug, preferredLang) {
           searchKeywords:   extracted.search_keywords,
           recommendations:  extracted.recommendations,
           contact:          finalContact,
+          agentReadiness,
           lang,
           updatedAt:        now,
         },
@@ -114,6 +131,7 @@ async function runPipeline(websiteId, normalized, slug, preferredLang) {
           searchKeywords:   extracted.search_keywords,
           recommendations:  extracted.recommendations,
           contact:          finalContact,
+          agentReadiness,
           lang,
         },
       }),
@@ -175,7 +193,7 @@ router.post('/api/scan', async (req, res) => {
   });
 
   // Launch pipeline in background — response is already sent
-  setImmediate(() => runPipeline(website.id, normalized, slug, preferredLang));
+  setImmediate(() => runPipeline(website.id, normalized, canonical, slug, preferredLang));
 });
 
 // ── GET /api/scan/:id ─────────────────────────────────────────────────────────
@@ -215,6 +233,7 @@ router.get('/api/scan/:id', async (req, res) => {
       lastScannedAt: website.lastScannedAt,
       latestScan:    website.scanResults[0] ?? null,
       aeoContent:    website.aeoContent,
+      agentReadiness: website.aeoContent?.agentReadiness ?? null,
     });
   } catch (err) {
     console.error('[scan] GET error:', err);

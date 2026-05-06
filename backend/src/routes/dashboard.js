@@ -3,6 +3,7 @@
 const express = require('express');
 const redis   = require('../lib/redis');
 const db      = require('../lib/db');
+const { classifyBotRequestPath } = require('../lib/botPathClassifier');
 
 const router = express.Router();
 
@@ -36,7 +37,12 @@ router.get('/api/dashboard', async (req, res) => {
         try { return JSON.parse(entry); }
         catch { return null; }
       })
-      .filter(Boolean);
+      .filter(Boolean)
+      .map((log) => ({
+        ...log,
+        requestType: log.requestType || classifyBotRequestPath(log.path || ''),
+      }))
+      .filter((log) => log.requestType !== 'security_probe');
 
     const total24h = Object.values(stats24h  || {}).reduce((s, v) => s + parseInt(v, 10), 0);
     const totalAll = Object.values(statsTotal || {}).reduce((s, v) => s + parseInt(v, 10), 0);
@@ -72,9 +78,10 @@ router.get('/api/dashboard', async (req, res) => {
     const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
     const [totalAll, total24h, recentRows] = await Promise.all([
-      db.crawlerLog.count(),
-      db.crawlerLog.count({ where: { visitedAt: { gte: since24h } } }),
+      db.crawlerLog.count({ where: { requestType: 'ai_discovery' } }),
+      db.crawlerLog.count({ where: { requestType: 'ai_discovery', visitedAt: { gte: since24h } } }),
       db.crawlerLog.findMany({
+        where:   { requestType: 'ai_discovery' },
         orderBy: { visitedAt: 'desc' },
         take:    20,
         select:  {
@@ -82,6 +89,7 @@ router.get('/api/dashboard', async (req, res) => {
           botCompany: true,
           urlPath:    true,
           statusCode: true,
+          requestType: true,
           visitedAt:  true,
         },
       }),
@@ -98,6 +106,7 @@ router.get('/api/dashboard', async (req, res) => {
         company: r.botCompany,
         path:    r.urlPath,
         status:  r.statusCode,
+        requestType: r.requestType,
         ts:      r.visitedAt,
       })),
     });

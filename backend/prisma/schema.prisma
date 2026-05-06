@@ -67,6 +67,7 @@ model AeoContent {
   searchKeywords   Json // string[]
   recommendations  Json // string[]
   contact          Json // { phone: string|null; email: string|null; address: string|null }
+  agentReadiness   Json?
 
   /// Language of the generated content: "en" | "zh-TW" | "zh-CN"
   lang String @default("en")
@@ -125,12 +126,14 @@ model CrawlerLog {
   botCompany String // "Anthropic"
   urlPath    String // "/aeo/shops/silinno-com/llms.txt"
   statusCode Int    @default(200)
+  requestType String @default("ai_discovery")
   ipAddress  String?
   userAgent  String? @db.Text
   visitedAt  DateTime @default(now())
 
   @@index([visitedAt])
   @@index([botName])
+  @@index([requestType])
   @@map("crawler_logs")
 }
 

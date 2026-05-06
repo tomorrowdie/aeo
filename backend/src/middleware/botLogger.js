@@ -3,6 +3,7 @@
 const redis = require('../lib/redis');
 const db = require('../lib/db');
 const { detectBot } = require('../lib/bots');
+const { classifyBotRequestPath } = require('../lib/botPathClassifier');
 
 /**
  * Write a bot visit to Redis (synchronous pipeline — fast) and PostgreSQL
@@ -13,6 +14,7 @@ const { detectBot } = require('../lib/bots');
 async function logBotVisit({ bot, path, statusCode, ip, userAgent }) {
   const now = new Date();
   const isoNow = now.toISOString();
+  const requestType = classifyBotRequestPath(path);
 
   const logEntry = JSON.stringify({
     bot:     bot.name,
@@ -20,17 +22,23 @@ async function logBotVisit({ bot, path, statusCode, ip, userAgent }) {
     path,
     status:  statusCode,
     ts:      isoNow,
+    requestType,
   });
 
   // ── Redis write (fast path) ───────────────────────────────────────────────
   try {
     const pipe = redis.pipeline();
-    pipe.lpush('crawler:logs:recent', logEntry);
-    pipe.ltrim('crawler:logs:recent', 0, 499);          // keep newest 500
-    pipe.hincrby('crawler:stats:24h', bot.name, 1);
-    pipe.hincrby('crawler:stats:total', bot.name, 1);
-    pipe.sadd('crawler:active_bots', bot.name);
-    pipe.set('crawler:last_visit', isoNow);
+    if (requestType === 'security_probe') {
+      pipe.lpush('crawler:logs:security_recent', logEntry);
+      pipe.ltrim('crawler:logs:security_recent', 0, 199);
+    } else {
+      pipe.lpush('crawler:logs:recent', logEntry);
+      pipe.ltrim('crawler:logs:recent', 0, 499);          // keep newest 500
+      pipe.hincrby('crawler:stats:24h', bot.name, 1);
+      pipe.hincrby('crawler:stats:total', bot.name, 1);
+      pipe.sadd('crawler:active_bots', bot.name);
+      pipe.set('crawler:last_visit', isoNow);
+    }
     await pipe.exec();
   } catch (err) {
     // Redis is best-effort — a failure must never crash the server
@@ -45,6 +53,7 @@ async function logBotVisit({ bot, path, statusCode, ip, userAgent }) {
         botCompany: bot.company,
         urlPath:    path,
         statusCode,
+        requestType,
         ipAddress:  ip ?? null,
         userAgent:  userAgent ?? null,
         visitedAt:  now,
