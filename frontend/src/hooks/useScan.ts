@@ -10,7 +10,7 @@ export interface UseScanReturn {
   phase: ScanPhase;
   result: ScanPollResult | null;
   error: string | null;
-  startScan: (url: string) => void;
+  startScan: (payload: string | Record<string, any>) => void;
   reset: () => void;
 }
 
@@ -35,7 +35,7 @@ export function useScan(): UseScanReturn {
     };
   }, [stopPolling]);
 
-  const startScan = useCallback(async (url: string) => {
+  const startScan = useCallback(async (payload: string | Record<string, any>) => {
     stopPolling();
     setPhase('scanning');
     setResult(null);
@@ -43,7 +43,7 @@ export function useScan(): UseScanReturn {
 
     let websiteId: string;
     try {
-      const init = await postScan(url);
+      const init = await postScan(payload);
       websiteId = init.websiteId;
     } catch (e) {
       console.error('Scan init failed:', e);

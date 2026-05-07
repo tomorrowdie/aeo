@@ -58,7 +58,7 @@ export default function HomePage() {
   const botBreakdown = dashboard?.botBreakdown ?? [];
   const recentLogs   = (dashboard?.recentLogs ?? []).filter(log => 
     log.requestType !== 'security_probe' &&
-    !log.path.match(/\/\.(env|npmrc|cursor|git)|wp-config|phpmyadmin/i)
+    !log.path.match(/\/\.(env|npmrc|cursor|git|vscode)|wp-config|phpmyadmin|\.php$|\.sql$|\.bak$/i)
   );
 
   return (

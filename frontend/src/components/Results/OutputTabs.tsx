@@ -49,10 +49,11 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
   const amazon = result.amazonAiRelevance;
 
   return (
-    <div className="w-full flex flex-col bg-card border border-border rounded-2xl overflow-hidden shadow-xl shadow-black/50">
-      <Tabs defaultValue="overview" className="w-full">
-        {/* Header Strip */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-border p-4 gap-4 bg-muted/30">
+    <div className="w-full flex flex-col">
+      <Tabs defaultValue="overview" className="w-full flex flex-col gap-6">
+        
+        {/* Header Strip with Tabs and Font Controls */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-card border border-border p-4 rounded-2xl shadow-sm gap-4">
           <TabsList className="flex flex-wrap h-auto bg-transparent border-0 rounded-none p-0 gap-2">
             <TabsTrigger value="overview" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabOverview}</TabsTrigger>
             
@@ -82,29 +83,33 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
           </div>
         </div>
 
-        {/* Content Body */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          <div className={`lg:col-span-2 w-full p-6 md:p-8 ${fontClass}`}>
+        {/* Content Body Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-8 items-start">
+          
+          {/* Main Left Content Area */}
+          <div className={`min-w-0 w-full bg-card border border-border rounded-2xl shadow-xl shadow-black/50 p-6 md:p-8 ${fontClass}`}>
+            
+            {/* Website Tabs Content */}
             <TabsContent value="overview" className="mt-0 space-y-8 outline-none">
               <div className="flex justify-between items-start gap-4">
-                <div>
-                  <h2 className="text-3xl font-bold text-foreground mb-2">{aeo.businessName || 'Unnamed Business'}</h2>
-                  {aeo.tagline && <p className="text-purple-500 font-semibold">{aeo.tagline}</p>}
+                <div className="min-w-0">
+                  <h2 className="text-3xl font-bold text-foreground mb-2 break-words whitespace-normal">{aeo.businessName || 'Unnamed Business'}</h2>
+                  {aeo.tagline && <p className="text-purple-500 font-semibold break-words whitespace-normal">{aeo.tagline}</p>}
                 </div>
                 <CopyButton content={overviewSummary} />
               </div>
               
               {aeo.about && (
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">About</h3>
-                  <p className="text-foreground leading-relaxed whitespace-pre-wrap">{aeo.about}</p>
+                  <p className="text-foreground leading-relaxed whitespace-pre-wrap break-words whitespace-normal">{aeo.about}</p>
                 </div>
               )}
 
               {aeo.productsServices && aeo.productsServices.length > 0 && (
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Products & Services</h3>
-                  <ul className="list-disc list-inside text-foreground space-y-2 leading-relaxed ml-2">
+                  <ul className="list-disc list-inside text-foreground space-y-2 leading-relaxed ml-2 break-words whitespace-normal">
                     {aeo.productsServices.map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
@@ -113,9 +118,9 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
               )}
 
               {aeo.features && aeo.features.length > 0 && (
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Key Features</h3>
-                  <ul className="list-disc list-inside text-foreground space-y-2 leading-relaxed ml-2">
+                  <ul className="list-disc list-inside text-foreground space-y-2 leading-relaxed ml-2 break-words whitespace-normal">
                     {aeo.features.map((feature, i) => (
                       <li key={i}>{feature}</li>
                     ))}
@@ -124,9 +129,9 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
               )}
 
               {aeo.contact && (aeo.contact.phone || aeo.contact.email || aeo.contact.address) && (
-                <div className="pt-6 border-t border-border">
+                <div className="pt-6 border-t border-border min-w-0">
                   <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">Contact Info</h3>
-                  <div className="flex flex-col gap-3 text-foreground">
+                  <div className="flex flex-col gap-3 text-foreground break-words whitespace-normal">
                     {aeo.contact.phone && <div className="flex gap-4"><span className="text-muted-foreground w-20 shrink-0">Phone:</span> <span>{aeo.contact.phone}</span></div>}
                     {aeo.contact.email && <div className="flex gap-4"><span className="text-muted-foreground w-20 shrink-0">Email:</span> <span>{aeo.contact.email}</span></div>}
                     {aeo.contact.address && <div className="flex gap-4"><span className="text-muted-foreground w-20 shrink-0">Address:</span> <span>{aeo.contact.address}</span></div>}
@@ -135,71 +140,58 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
               )}
             </TabsContent>
 
-          <TabsContent value="llmstxt" className="mt-0 outline-none flex flex-col gap-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-semibold text-foreground">llms.txt Payload</h3>
-              <CopyButton content={aeo.llmsTxt} />
-            </div>
-            <div className="bg-muted/50 border border-border rounded-xl p-6 max-h-[600px] overflow-auto">
-              <pre className="font-mono text-foreground whitespace-pre-wrap break-words leading-relaxed">{aeo.llmsTxt}</pre>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="faq" className="mt-0 outline-none flex flex-col gap-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-semibold text-foreground">FAQ JSON-LD Schema</h3>
-              <CopyButton content={aeo.faqJsonLd} />
-            </div>
-            <div className="bg-muted/50 border border-border rounded-xl p-6 max-h-[600px] overflow-auto">
-              <pre className="font-mono text-foreground whitespace-pre-wrap break-words leading-relaxed">{aeo.faqJsonLd}</pre>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="agent-readiness" className="mt-0 outline-none">
-            <AgentReadinessTab ar={aeo.agentReadiness} />
-          </TabsContent>
-
-          <TabsContent value="recommendations" className="mt-0 outline-none flex flex-col gap-6">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-bold text-xl text-foreground">{t.recommendationsTitle}</h3>
-              {aeo.recommendations && aeo.recommendations.length > 0 && (
-                <CopyButton content={recsText} />
-              )}
-            </div>
-            
-            {aeo.recommendations && aeo.recommendations.length > 0 ? (
-              <ul className="flex flex-col gap-4">
-                {aeo.recommendations.map((rawRec, i) => {
-                  const rec = renderRecommendation(rawRec);
-                  return (
-                    <li key={i} className="flex items-start gap-4 text-foreground bg-muted p-5 rounded-xl leading-relaxed">
-                      <span className="text-success shrink-0 font-bold text-xl mt-[-2px]">→</span>
-                      <span>{rec}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="text-muted-foreground">No recommendations available.</p>
-            )}
-            
-            {aeo.searchKeywords && aeo.searchKeywords.length > 0 && (
-              <div className="mt-8 pt-8 border-t border-border">
-                <h4 className="font-bold text-foreground mb-4">Target Search Keywords</h4>
-                <div className="flex flex-wrap gap-2">
-                  {aeo.searchKeywords.map((kw, i) => (
-                    <span key={i} className="px-4 py-2 bg-muted text-foreground rounded-full shadow-sm border border-border">
-                      {kw}
-                    </span>
-                  ))}
-                </div>
+            <TabsContent value="llmstxt" className="mt-0 outline-none flex flex-col gap-4 min-w-0">
+              <div className="flex justify-between items-center">
+                <h3 className="font-semibold text-foreground">llms.txt Payload</h3>
+                <CopyButton content={aeo.llmsTxt} />
               </div>
-            )}
-          </TabsContent>
+              <div className="bg-muted/50 border border-border rounded-xl p-6 max-h-[600px] overflow-auto min-w-0">
+                <pre className="font-mono text-foreground whitespace-pre-wrap break-words leading-relaxed">{aeo.llmsTxt}</pre>
+              </div>
+            </TabsContent>
 
-            <TabsContent value="embed" className="mt-0 outline-none flex flex-col gap-10">
+            <TabsContent value="faq" className="mt-0 outline-none flex flex-col gap-4 min-w-0">
+              <div className="flex justify-between items-center">
+                <h3 className="font-semibold text-foreground">FAQ JSON-LD Schema</h3>
+                <CopyButton content={aeo.faqJsonLd} />
+              </div>
+              <div className="bg-muted/50 border border-border rounded-xl p-6 max-h-[600px] overflow-auto min-w-0">
+                <pre className="font-mono text-foreground whitespace-pre-wrap break-words leading-relaxed">{aeo.faqJsonLd}</pre>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="agent-readiness" className="mt-0 outline-none min-w-0">
+              <AgentReadinessTab ar={aeo.agentReadiness} />
+            </TabsContent>
+
+            <TabsContent value="recommendations" className="mt-0 outline-none flex flex-col gap-6 min-w-0">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-bold text-xl text-foreground">Recommendations</h3>
+                {aeo.recommendations && aeo.recommendations.length > 0 && (
+                  <CopyButton content={recsText} />
+                )}
+              </div>
+              
+              {aeo.recommendations && aeo.recommendations.length > 0 ? (
+                <ul className="flex flex-col gap-4 break-words whitespace-normal">
+                  {aeo.recommendations.map((rawRec, i) => {
+                    const rec = renderRecommendation(rawRec);
+                    return (
+                      <li key={i} className="flex items-start gap-4 text-foreground bg-muted p-5 rounded-xl leading-relaxed">
+                        <span className="text-success shrink-0 font-bold text-xl mt-[-2px]">→</span>
+                        <span>{rec}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="text-muted-foreground">No recommendations available.</p>
+              )}
+            </TabsContent>
+
+            <TabsContent value="embed" className="mt-0 outline-none flex flex-col gap-10 min-w-0">
               {aeo.llmsTxtLinkTag && (
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 min-w-0">
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="font-bold text-lg text-foreground">1. Link Tag</h3>
@@ -207,14 +199,14 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
                     </div>
                     <CopyButton content={aeo.llmsTxtLinkTag} />
                   </div>
-                  <div className="bg-muted/50 border border-border rounded-xl p-6 overflow-auto">
+                  <div className="bg-muted/50 border border-border rounded-xl p-6 overflow-auto min-w-0">
                     <pre className="font-mono text-foreground whitespace-pre-wrap break-words leading-relaxed">{aeo.llmsTxtLinkTag}</pre>
                   </div>
                 </div>
               )}
               
               {aeo.addressHtml && (
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 min-w-0">
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="font-bold text-lg text-foreground">2. Semantic Address</h3>
@@ -222,7 +214,7 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
                     </div>
                     <CopyButton content={aeo.addressHtml} />
                   </div>
-                  <div className="bg-muted/50 border border-border rounded-xl p-6 overflow-auto">
+                  <div className="bg-muted/50 border border-border rounded-xl p-6 overflow-auto min-w-0">
                     <pre className="font-mono text-foreground whitespace-pre-wrap break-words leading-relaxed">{aeo.addressHtml}</pre>
                   </div>
                 </div>
@@ -232,41 +224,52 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
             {/* Amazon Tabs Content */}
             {isAmazon && amazon && (
               <>
-                <TabsContent value="amazon-relevance" className="mt-0 outline-none space-y-6">
+                <TabsContent value="amazon-relevance" className="mt-0 outline-none space-y-6 min-w-0">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-bold text-xl text-foreground">Amazon AI Relevance Summary</h3>
+                    <h3 className="font-bold text-xl text-foreground">Amazon AI Relevance</h3>
                   </div>
-                  <div className="bg-muted/50 border border-border rounded-xl p-6">
+                  <div className="bg-muted/50 border border-border rounded-xl p-6 break-words whitespace-normal">
+                    <div className="flex flex-wrap gap-4 mb-4">
+                      {amazon.level && <span className="px-3 py-1 bg-purple-500 text-white rounded-full text-sm font-semibold">Level: {amazon.level}</span>}
+                      {amazon.source?.marketplace && <span className="px-3 py-1 bg-muted border border-border rounded-full text-sm font-semibold">Marketplace: {amazon.source.marketplace}</span>}
+                      {amazon.source?.asin && <span className="px-3 py-1 bg-muted border border-border rounded-full text-sm font-semibold">ASIN: {amazon.source.asin}</span>}
+                      {amazon.usageCost && <span className="px-3 py-1 bg-muted border border-border rounded-full text-sm font-semibold">Cost: ${amazon.usageCost.toFixed(3)}</span>}
+                    </div>
                     <p className="text-foreground leading-relaxed">{amazon.summary}</p>
+                    {amazon.source?.canonicalPhraseEnglish && (
+                      <p className="text-muted-foreground italic mt-4 text-sm break-words whitespace-normal">
+                        Analyzed against phrase: {amazon.source.canonicalPhraseEnglish}
+                      </p>
+                    )}
                   </div>
 
-                  <h3 className="font-bold text-xl text-foreground mt-8">Scores Breakdown</h3>
+                  <h3 className="font-bold text-xl text-foreground mt-8">Major Scores Breakdown</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Object.entries(amazon.scores).map(([key, val]) => (
-                      <div key={key} className="bg-muted/30 border border-border rounded-xl p-4 flex justify-between items-center">
-                        <span className="text-foreground font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                        <span className="text-success font-bold">{String(val)}</span>
+                      <div key={key} className="bg-muted/30 border border-border rounded-xl p-4 flex justify-between items-center break-words whitespace-normal">
+                        <span className="text-foreground font-semibold capitalize break-words">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                        <span className="text-success font-bold shrink-0 ml-2">{String(val)}</span>
                       </div>
                     ))}
                   </div>
                 </TabsContent>
 
-                <TabsContent value="categories" className="mt-0 outline-none space-y-6">
+                <TabsContent value="categories" className="mt-0 outline-none space-y-6 min-w-0">
                   <h3 className="font-bold text-xl text-foreground">Category Scores</h3>
                   {amazon.categories.map((cat, i) => (
-                    <div key={i} className="bg-muted/30 border border-border rounded-xl p-6 mb-4">
+                    <div key={i} className="bg-muted/30 border border-border rounded-xl p-6 mb-4 break-words whitespace-normal">
                       <div className="flex justify-between items-center mb-2">
-                        <h4 className="font-bold text-lg text-foreground">{cat.name || 'Category'}</h4>
-                        <span className="text-success font-bold">{cat.score || 0}</span>
+                        <h4 className="font-bold text-lg text-foreground break-words">{cat.name || cat.label || 'Category'}</h4>
+                        <span className="text-success font-bold shrink-0 ml-2">{cat.score || 0} / {cat.maxScore || 100}</span>
                       </div>
-                      <p className="text-muted-foreground text-sm">{cat.details || JSON.stringify(cat)}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{cat.details || JSON.stringify(cat)}</p>
                     </div>
                   ))}
                 </TabsContent>
 
-                <TabsContent value="amazon-recommendations" className="mt-0 outline-none space-y-6">
+                <TabsContent value="amazon-recommendations" className="mt-0 outline-none space-y-6 min-w-0">
                   <h3 className="font-bold text-xl text-foreground">Recommendations</h3>
-                  <ul className="flex flex-col gap-4">
+                  <ul className="flex flex-col gap-4 break-words whitespace-normal">
                     {amazon.recommendations.map((rec, i) => (
                       <li key={i} className="flex items-start gap-4 text-foreground bg-muted p-5 rounded-xl leading-relaxed">
                         <span className="text-warning shrink-0 font-bold text-xl mt-[-2px]">→</span>
@@ -276,12 +279,12 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
                   </ul>
                 </TabsContent>
 
-                <TabsContent value="amazon-fix" className="mt-0 outline-none space-y-6">
+                <TabsContent value="amazon-fix" className="mt-0 outline-none space-y-6 min-w-0">
                   <div className="flex justify-between items-center">
                     <h3 className="font-bold text-xl text-foreground">Copy Fix Instructions</h3>
                     <CopyButton content={amazon.copyAllInstructionsMarkdown || ''} />
                   </div>
-                  <div className="bg-muted/50 border border-border rounded-xl p-6 max-h-[600px] overflow-auto">
+                  <div className="bg-muted/50 border border-border rounded-xl p-6 max-h-[600px] overflow-auto min-w-0">
                     <pre className="font-mono text-foreground whitespace-pre-wrap break-words leading-relaxed">{amazon.copyAllInstructionsMarkdown}</pre>
                   </div>
                 </TabsContent>
@@ -291,7 +294,7 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
           
           {/* Right Sidebar Wrap */}
           {rightSidebar && (
-            <div className="lg:col-span-1 flex flex-col gap-6 w-full p-6 md:p-8 md:pl-0">
+            <div className="w-full max-w-[320px] flex flex-col gap-6 shrink-0">
               {rightSidebar}
             </div>
           )}

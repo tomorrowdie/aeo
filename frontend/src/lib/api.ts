@@ -151,11 +151,18 @@ export interface ScanPollResult {
   agentReadiness?: AgentReadinessResult | null;
   scanType?: 'website' | 'amazon_ai_relevance';
   amazonAiRelevance?: {
+    level: string;
     summary: string;
     scores: Record<string, number>;
     categories: any[];
     recommendations: string[];
     copyAllInstructionsMarkdown: string;
+    usageCost?: number;
+    source?: {
+      marketplace?: string;
+      asin?: string;
+      canonicalPhraseEnglish?: string;
+    };
   };
 }
 
@@ -187,11 +194,12 @@ export async function fetchDashboard(): Promise<DashboardData> {
   return res.json();
 }
 
-export async function postScan(url: string, lang = 'en'): Promise<ScanInit> {
+export async function postScan(payload: string | Record<string, any>, lang = 'en'): Promise<ScanInit> {
+  const body = typeof payload === 'string' ? { url: payload, lang } : { ...payload, lang };
   const res = await fetch(`${BASE}/api/scan`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url, lang }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) {
     console.error(`[postScan] Backend returned ${res.status} ${res.statusText}`);
