@@ -56,7 +56,10 @@ export default function HomePage() {
   }, [phase]);
 
   const botBreakdown = dashboard?.botBreakdown ?? [];
-  const recentLogs   = dashboard?.recentLogs   ?? [];
+  const recentLogs   = (dashboard?.recentLogs ?? []).filter(log => 
+    log.requestType !== 'security_probe' &&
+    !log.path.match(/\/\.(env|npmrc|cursor|git)|wp-config|phpmyadmin/i)
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-purple-500 selection:text-white">
@@ -111,7 +114,7 @@ export default function HomePage() {
           />
 
           <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase mt-2">
-            Free scan → AI score → Generate fix code → Get found
+            {t.processLine}
             <span className="mx-2">|</span>
             <a href="#leaderboard" className="text-purple-500 hover:underline font-bold">🏆 View Leaderboard</a>
           </p>
@@ -140,18 +143,15 @@ export default function HomePage() {
         {/* ── Scan Result ─────────────────────────────────────────────────────── */}
         {phase === 'complete' && result && (
           <section className="mt-16 w-full max-w-7xl animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-              {/* Left Column: Output Tabs */}
-              <div className="lg:col-span-2 w-full">
-                <OutputTabs result={result} />
-              </div>
-              
-              {/* Right Column: Quick Status & Score */}
-              <div className="lg:col-span-1 flex flex-col gap-6 w-full">
-                <ScoreCard result={result} onRescan={reset} />
-                <ScoreBreakdown result={result} />
-              </div>
-            </div>
+            <OutputTabs 
+              result={result} 
+              rightSidebar={
+                <>
+                  <ScoreCard result={result} onRescan={reset} />
+                  <ScoreBreakdown result={result} />
+                </>
+              }
+            />
           </section>
         )}
 
@@ -164,7 +164,7 @@ export default function HomePage() {
 
         {/* ── Bot Grid ─────────────────────────────────────────────────────────── */}
         <section className="mt-16 w-full max-w-5xl">
-          <BotGrid botBreakdown={botBreakdown} />
+          <BotGrid botBreakdown={botBreakdown} t={t} />
         </section>
 
         {/* ── Leaderboard ──────────────────────────────────────────────────────── */}

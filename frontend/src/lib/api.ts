@@ -149,6 +149,14 @@ export interface ScanPollResult {
   latestScan: ScanResult | null;
   aeoContent: AeoContent | null;
   agentReadiness?: AgentReadinessResult | null;
+  scanType?: 'website' | 'amazon_ai_relevance';
+  amazonAiRelevance?: {
+    summary: string;
+    scores: Record<string, number>;
+    categories: any[];
+    recommendations: string[];
+    copyAllInstructionsMarkdown: string;
+  };
 }
 
 // ── Leaderboard ───────────────────────────────────────────────────────────────

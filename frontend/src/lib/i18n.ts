@@ -3,7 +3,9 @@ export type Language = 'en' | 'zh-HK' | 'zh-CN';
 export const i18n = {
   en: {
     heroTitle: "AEO Scanner",
-    heroSubtitle: "Paste your URL. Get found by AI. Free.",
+    heroSubtitle: "Paste your URL. Get found by AI.",
+    processLine: "Paste URL → AI score → Generate fix code → Get found",
+    awaitingLabel: "No verified hit yet",
     heroDesc: "AI crawlers visit daily. Scan your site for free and get discovered by ChatGPT, Claude, and Perplexity.",
     inputPlaceholder: "https://example.com",
     submitButton: "Scan Now",
@@ -35,7 +37,9 @@ export const i18n = {
   },
   'zh-HK': {
     heroTitle: "AEO 掃描器",
-    heroSubtitle: "貼上網址。讓 AI 找到你。完全免費。",
+    heroSubtitle: "貼上網址。讓 AI 找到你。",
+    processLine: "貼上網址 → AI 評分 → 產生修正程式碼 → 增加曝光",
+    awaitingLabel: "尚未有有效訪問",
     heroDesc: "AI 爬蟲每天都來。免費掃描你的網站，讓 ChatGPT、Claude 和 Perplexity 找到你。",
     inputPlaceholder: "https://example.com",
     submitButton: "立即掃描",
@@ -67,7 +71,9 @@ export const i18n = {
   },
   'zh-CN': {
     heroTitle: "AEO 扫描器",
-    heroSubtitle: "粘贴网址。让 AI 找到你。完全免费。",
+    heroSubtitle: "粘贴网址。让 AI 找到你。",
+    processLine: "粘贴网址 → AI 评分 → 生成修复代码 → 增加曝光",
+    awaitingLabel: "尚未有有效访问",
     heroDesc: "AI 爬虫每天都来。免费扫描你的网站，让 ChatGPT、Claude 和 Perplexity 找到你。",
     inputPlaceholder: "https://example.com",
     submitButton: "立即扫描",

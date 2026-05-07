@@ -37,9 +37,10 @@ function timeAgo(iso: string | null): string {
 
 interface Props {
   botBreakdown: BotStat[];
+  t?: any;
 }
 
-export default function BotGrid({ botBreakdown }: Props) {
+export default function BotGrid({ botBreakdown, t }: Props) {
   // Merge live data into canonical list
   const stats = new Map(botBreakdown.map((b) => [b.name, b]));
 
@@ -80,7 +81,7 @@ export default function BotGrid({ botBreakdown }: Props) {
               {/* Count */}
               <div className="text-right shrink-0">
                 {awaiting ? (
-                  <span className="text-xs text-gray-500">Awaiting...</span>
+                  <span className="text-xs text-gray-500">{t?.awaitingLabel || 'Awaiting'}</span>
                 ) : (
                   <>
                     <div className="text-xl font-bold text-[#00ff88]">{count24h.toLocaleString()}</div>
