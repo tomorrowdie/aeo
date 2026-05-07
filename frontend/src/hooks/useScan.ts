@@ -8,6 +8,7 @@ export type ScanPhase = 'idle' | 'scanning' | 'complete' | 'failed';
 
 export interface UseScanReturn {
   phase: ScanPhase;
+  scanMode: 'website' | 'amazon';
   result: ScanPollResult | null;
   error: string | null;
   startScan: (payload: string | Record<string, any>) => void;
@@ -20,6 +21,8 @@ export function useScan(): UseScanReturn {
   const [error, setError]   = useState<string | null>(null);
   const pollRef             = useRef<ReturnType<typeof setInterval> | null>(null);
   const { t } = useLanguage();
+
+  const [scanMode, setScanMode] = useState<'website' | 'amazon'>('website');
 
   const stopPolling = useCallback(() => {
     if (pollRef.current) {
@@ -41,6 +44,9 @@ export function useScan(): UseScanReturn {
     setResult(null);
     setError(null);
 
+    const isAmazon = typeof payload === 'object' && payload.sourceType === 'amazon_listing';
+    setScanMode(isAmazon ? 'amazon' : 'website');
+
     let websiteId: string;
     try {
       const init = await postScan(payload);
@@ -52,7 +58,7 @@ export function useScan(): UseScanReturn {
         setError(t.errorNetwork);
       } else {
         // Backend returned a specific error or 500
-        setError(t.errorFailed);
+        setError(isAmazon ? "Amazon listing analysis failed. Please check required fields and try again." : t.errorFailed);
       }
       setPhase('failed');
       return;
@@ -97,5 +103,5 @@ export function useScan(): UseScanReturn {
     setError(null);
   }, [stopPolling]);
 
-  return { phase, result, error, startScan, reset };
+  return { phase, scanMode, result, error, startScan, reset };
 }

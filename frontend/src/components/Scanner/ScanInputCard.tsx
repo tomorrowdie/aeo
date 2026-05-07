@@ -68,6 +68,8 @@ export default function ScanInputCard({ phase, onScan, onReset, defaultValue = '
         sourceType: 'amazon_listing',
         marketplace: amzMarketplace,
         manualListing: {
+          amazonUrl: normalized,
+          asin: amzAsin,
           amazonProductTitle: amzTitle,
           bulletPoints: amzBullets,
           productDescription: amzDesc,
@@ -77,8 +79,7 @@ export default function ScanInputCard({ phase, onScan, onReset, defaultValue = '
           aPlusContentType: amzAplusType,
           faqInformation: amzFaq,
           reviewInformation: amzReviews,
-          productNicheKnowledge: amzNiche,
-          amazonUrl: normalized
+          productNicheKnowledge: amzNiche
         }
       });
     } else {

@@ -45,7 +45,7 @@ function TickerBar({ logs, title }: { logs: { bot: string; path: string; ts: str
 
 export default function HomePage() {
   const { data: dashboard, loading: dashLoading } = useDashboard(60_000);
-  const { phase, result, error, startScan, reset } = useScan();
+  const { phase, scanMode, result, error, startScan, reset } = useScan();
   const { lang, setLang, t } = useLanguage();
   const [leaderboardTrigger, setLeaderboardTrigger] = useState(0);
 
@@ -131,10 +131,14 @@ export default function HomePage() {
             <div className="w-full max-w-2xl rounded-2xl border border-border bg-card p-8 text-center shadow-xl shadow-black/20">
               <div className="flex items-center justify-center gap-4">
                 <div className="h-5 w-5 rounded-full border-2 border-purple-500 border-t-transparent animate-spin" />
-                <span className="text-foreground font-medium text-lg">{t.scanningState}</span>
+                <span className="text-foreground font-medium text-lg">
+                  {scanMode === 'amazon' ? "Analyzing your Amazon listing relevance..." : t.scanningState}
+                </span>
               </div>
               <p className="mt-3 text-sm text-muted-foreground">
-                {t.scanningDesc}
+                {scanMode === 'amazon' 
+                  ? "Checking listing relevance signals, buyer intent, A+ content, specs, FAQ, reviews, and semantic coverage..." 
+                  : t.scanningDesc}
               </p>
             </div>
           )}

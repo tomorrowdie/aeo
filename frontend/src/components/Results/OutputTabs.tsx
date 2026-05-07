@@ -55,22 +55,22 @@ export default function OutputTabs({ result, rightSidebar }: Props) {
         {/* Header Strip with Tabs and Font Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-card border border-border p-4 rounded-2xl shadow-sm gap-4">
           <TabsList className="flex flex-wrap h-auto bg-transparent border-0 rounded-none p-0 gap-2">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabOverview}</TabsTrigger>
+            <TabsTrigger value="overview" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md border border-transparent data-[state=active]:border-purple-400 rounded-lg px-5 py-2.5 text-base font-semibold text-muted-foreground hover:text-foreground transition-all">{t.tabOverview}</TabsTrigger>
             
             {isAmazon ? (
               <>
-                <TabsTrigger value="amazon-relevance" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">Amazon AI Relevance</TabsTrigger>
-                <TabsTrigger value="categories" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">Category Scores</TabsTrigger>
-                <TabsTrigger value="amazon-recommendations" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">Recommendations</TabsTrigger>
-                <TabsTrigger value="amazon-fix" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">Copy Fix Instructions</TabsTrigger>
+                <TabsTrigger value="amazon-relevance" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md border border-transparent data-[state=active]:border-purple-400 rounded-lg px-5 py-2.5 text-base font-semibold text-muted-foreground hover:text-foreground transition-all">Amazon AI Relevance</TabsTrigger>
+                <TabsTrigger value="categories" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md border border-transparent data-[state=active]:border-purple-400 rounded-lg px-5 py-2.5 text-base font-semibold text-muted-foreground hover:text-foreground transition-all">Category Scores</TabsTrigger>
+                <TabsTrigger value="amazon-recommendations" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md border border-transparent data-[state=active]:border-purple-400 rounded-lg px-5 py-2.5 text-base font-semibold text-muted-foreground hover:text-foreground transition-all">Recommendations</TabsTrigger>
+                <TabsTrigger value="amazon-fix" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md border border-transparent data-[state=active]:border-purple-400 rounded-lg px-5 py-2.5 text-base font-semibold text-muted-foreground hover:text-foreground transition-all">Copy Fix Instructions</TabsTrigger>
               </>
             ) : (
               <>
-                <TabsTrigger value="llmstxt" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabLlmsTxt}</TabsTrigger>
-                <TabsTrigger value="faq" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabFaq}</TabsTrigger>
-                <TabsTrigger value="agent-readiness" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">Agent Readiness</TabsTrigger>
-                <TabsTrigger value="recommendations" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabRecommendations}</TabsTrigger>
-                <TabsTrigger value="embed" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg px-4 py-2 text-sm">{t.tabEmbed}</TabsTrigger>
+                <TabsTrigger value="llmstxt" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md border border-transparent data-[state=active]:border-purple-400 rounded-lg px-5 py-2.5 text-base font-semibold text-muted-foreground hover:text-foreground transition-all">{t.tabLlmsTxt}</TabsTrigger>
+                <TabsTrigger value="faq" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md border border-transparent data-[state=active]:border-purple-400 rounded-lg px-5 py-2.5 text-base font-semibold text-muted-foreground hover:text-foreground transition-all">{t.tabFaq}</TabsTrigger>
+                <TabsTrigger value="agent-readiness" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md border border-transparent data-[state=active]:border-purple-400 rounded-lg px-5 py-2.5 text-base font-semibold text-muted-foreground hover:text-foreground transition-all">Agent Readiness</TabsTrigger>
+                <TabsTrigger value="recommendations" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md border border-transparent data-[state=active]:border-purple-400 rounded-lg px-5 py-2.5 text-base font-semibold text-muted-foreground hover:text-foreground transition-all">{t.tabRecommendations}</TabsTrigger>
+                <TabsTrigger value="embed" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md border border-transparent data-[state=active]:border-purple-400 rounded-lg px-5 py-2.5 text-base font-semibold text-muted-foreground hover:text-foreground transition-all">{t.tabEmbed}</TabsTrigger>
               </>
             )}
           </TabsList>
