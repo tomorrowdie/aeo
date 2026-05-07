@@ -40,12 +40,15 @@ export default function ScanInputCard({ phase, onScan, onReset, defaultValue = '
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setLocalError(null);
-    if (!url.trim() || scanning) return;
+    if (!url.trim() || scanning) {
+      return;
+    }
 
     let normalized = url.trim();
     try {
       normalized = normalizeUrl(normalized);
     } catch {
+      console.error("Invalid URL");
       setLocalError(t.errorInvalidUrl);
       return;
     }
@@ -64,6 +67,12 @@ export default function ScanInputCard({ phase, onScan, onReset, defaultValue = '
     }
 
     if (showAmazonForm) {
+      if (!amzMarketplace.trim() || !amzTitle.trim() || !amzBullets.trim() || !amzDesc.trim() || !amzSpecs.trim() || !amzAplusType.trim()) {
+        console.error("Manual validation failed");
+        setLocalError("Please fill in all required Amazon listing fields.");
+        return;
+      }
+
       onScan({
         sourceType: 'amazon_listing',
         marketplace: amzMarketplace,
@@ -99,7 +108,7 @@ export default function ScanInputCard({ phase, onScan, onReset, defaultValue = '
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-semibold text-muted-foreground mb-1 block">Amazon URL</label>
-              <Input type="text" value={url} onChange={(e) => setUrl(e.target.value)} required className="bg-muted border-border" />
+              <Input type="text" value={url} onChange={(e) => setUrl(e.target.value)} className="bg-muted border-border" />
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground mb-1 block">ASIN (optional)</label>
@@ -107,7 +116,7 @@ export default function ScanInputCard({ phase, onScan, onReset, defaultValue = '
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground mb-1 block">Marketplace</label>
-              <Input type="text" value={amzMarketplace} onChange={(e) => setAmzMarketplace(e.target.value)} required className="bg-muted border-border" placeholder="e.g. US" />
+              <Input type="text" value={amzMarketplace} onChange={(e) => setAmzMarketplace(e.target.value)} className="bg-muted border-border" placeholder="e.g. US" />
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground mb-1 block">A+ Content Type</label>
@@ -119,20 +128,20 @@ export default function ScanInputCard({ phase, onScan, onReset, defaultValue = '
           </div>
           <div>
             <label className="text-xs font-semibold text-muted-foreground mb-1 block">Product Title</label>
-            <Input type="text" value={amzTitle} onChange={(e) => setAmzTitle(e.target.value)} required className="bg-muted border-border" />
+            <Input type="text" value={amzTitle} onChange={(e) => setAmzTitle(e.target.value)} className="bg-muted border-border" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-semibold text-muted-foreground mb-1 block">Bullet Points</label>
-              <textarea value={amzBullets} onChange={(e) => setAmzBullets(e.target.value)} required className="w-full h-24 p-3 rounded-md bg-muted border border-border text-sm" />
+              <textarea value={amzBullets} onChange={(e) => setAmzBullets(e.target.value)} className="w-full h-24 p-3 rounded-md bg-muted border border-border text-sm" />
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground mb-1 block">Product Description</label>
-              <textarea value={amzDesc} onChange={(e) => setAmzDesc(e.target.value)} required className="w-full h-24 p-3 rounded-md bg-muted border border-border text-sm" />
+              <textarea value={amzDesc} onChange={(e) => setAmzDesc(e.target.value)} className="w-full h-24 p-3 rounded-md bg-muted border border-border text-sm" />
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground mb-1 block">Product Details / Specs</label>
-              <textarea value={amzSpecs} onChange={(e) => setAmzSpecs(e.target.value)} required className="w-full h-24 p-3 rounded-md bg-muted border border-border text-sm" />
+              <textarea value={amzSpecs} onChange={(e) => setAmzSpecs(e.target.value)} className="w-full h-24 p-3 rounded-md bg-muted border border-border text-sm" />
             </div>
             <div>
               <label className="text-xs font-semibold text-muted-foreground mb-1 block">Backend Search Terms (opt)</label>
