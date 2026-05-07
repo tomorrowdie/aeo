@@ -4,10 +4,13 @@ const express = require('express');
 const db      = require('../lib/db');
 const config  = require('../config');
 const { urlToSlug, canonicalizeUrl }  = require('../lib/slug');
+const { detectScanType, normalizeMarketplace } = require('../lib/marketplaceRouteDetector');
+const { buildManualSyntheticUrl } = require('../lib/amazonUrlParser');
 const { scrape, ScraperError }        = require('../services/scraper');
 const { score }                       = require('../services/scorer');
 const { extract }                     = require('../services/llmPipeline');
 const { runAgentReadinessChecks }     = require('../services/agentReadiness');
+const { analyzeAmazonAiRelevance }    = require('../services/amazonAiRelevanceAnalyzer');
 const {
   generateLlmsTxt,
   generateFaqJsonLd,
@@ -43,6 +46,17 @@ function mergeContact(scraperContact, llmContact) {
     email:   scraperContact.email   || llmContact.email   || null,
     address: scraperContact.address || llmContact.address || null,
   };
+}
+
+function parseAmazonScanIdentity(input = {}) {
+  if (input.manualListing && input.sourceType === 'amazon_listing' && !input.url) {
+    return parseUrl(buildManualSyntheticUrl({
+      marketplace: normalizeMarketplace(input.marketplace),
+      asin: input.asin,
+      title: input.manualListing.amazonProductTitle ?? input.manualListing.title,
+    }));
+  }
+  return parseUrl(input.url);
 }
 
 async function markFailed(websiteId) {
@@ -158,16 +172,71 @@ async function runPipeline(websiteId, normalized, canonical, slug, preferredLang
   }
 }
 
+async function runAmazonAiRelevancePipeline(websiteId, input, slug) {
+  try {
+    const amazonAiRelevance = await analyzeAmazonAiRelevance(input);
+    const now = new Date();
+    const scoreValue = amazonAiRelevance.scores?.amazonAiRelevanceScore ?? 0;
+
+    await db.scanResult.create({
+      data: {
+        websiteId,
+        score: scoreValue,
+        scanType: 'amazon_ai_relevance',
+        amazonAiRelevance,
+        scannedAt: now,
+      },
+    });
+
+    await db.website.update({
+      where: { id: websiteId },
+      data: {
+        title:
+          input.manualListing?.title ||
+          amazonAiRelevance.source?.canonicalPhraseEnglish ||
+          amazonAiRelevance.source?.asin ||
+          'Amazon Listing',
+        score: scoreValue,
+        scanType: 'amazon_ai_relevance',
+        scanStatus: 'COMPLETE',
+        scanCount: { increment: 1 },
+        lastScannedAt: now,
+      },
+    });
+
+    console.log(`[scan] Amazon AI relevance completed: ${slug} (score: ${scoreValue})`);
+  } catch (err) {
+    console.error('[scan] Amazon AI relevance pipeline error:', err.message);
+    if (err.stack) console.error(err.stack);
+    await markFailed(websiteId);
+  }
+}
+
 // ── POST /api/scan ────────────────────────────────────────────────────────────
 // Returns 202 immediately; pipeline runs in background; client polls GET /api/scan/:id
 
 router.post('/api/scan', async (req, res) => {
-  const { url: rawUrl, lang: preferredLang = 'en' } = req.body;
+  const body = req.body || {};
+  const { url: rawUrl, lang: preferredLang = 'en' } = body;
+  const detectedScanType = detectScanType(body);
 
-  // URL validation
-  let normalized, canonical, slug;
+  if (detectedScanType === 'walmart_listing') {
+    return res.status(501).json({
+      error: 'Walmart marketplace support is not implemented in v1.',
+      scanType: 'walmart_listing',
+    });
+  }
+
+  // Detect scan type before parseUrl so manual Amazon listings can skip URL input.
+  let normalized, canonical, slug, scanType;
   try {
-    ({ normalized, canonical, slug } = parseUrl(rawUrl));
+    if (detectedScanType === 'amazon_listing') {
+      ({ normalized, canonical, slug } = parseAmazonScanIdentity(body));
+      scanType = 'amazon_ai_relevance';
+    } else {
+      ({ normalized, canonical, slug } = parseUrl(rawUrl));
+      scanType = 'website';
+    }
   } catch (err) {
     return res.status(err.status || 400).json({ error: err.message });
   }
@@ -177,8 +246,8 @@ router.post('/api/scan', async (req, res) => {
   try {
     website = await db.website.upsert({
       where:  { slug },
-      update: { scanStatus: 'SCANNING', updatedAt: new Date() },
-      create: { url: canonical, slug, scanStatus: 'SCANNING' },
+      update: { scanStatus: 'SCANNING', scanType, updatedAt: new Date() },
+      create: { url: canonical, slug, scanType, scanStatus: 'SCANNING' },
     });
   } catch (err) {
     console.error('[scan] DB upsert error:', err);
@@ -190,10 +259,21 @@ router.post('/api/scan', async (req, res) => {
     websiteId: website.id,
     slug:      website.slug,
     status:    'SCANNING',
+    scanType,
   });
 
   // Launch pipeline in background — response is already sent
-  setImmediate(() => runPipeline(website.id, normalized, canonical, slug, preferredLang));
+  if (detectedScanType === 'amazon_listing') {
+    const amazonInput = {
+      ...body,
+      url: body.url || normalized,
+      marketplace: normalizeMarketplace(body.marketplace),
+      mode: body.mode || 'analyze_only',
+    };
+    setImmediate(() => runAmazonAiRelevancePipeline(website.id, amazonInput, slug));
+  } else {
+    setImmediate(() => runPipeline(website.id, normalized, canonical, slug, preferredLang));
+  }
 });
 
 // ── GET /api/scan/:id ─────────────────────────────────────────────────────────
@@ -214,7 +294,7 @@ router.get('/api/scan/:id', async (req, res) => {
     // Defensive: pipeline completed data but status update was lost — self-repair.
     if (
       website.scanStatus === 'SCANNING' &&
-      website.aeoContent &&
+      (website.aeoContent || website.scanResults[0]?.amazonAiRelevance) &&
       website.scanResults.length > 0
     ) {
       await db.website
@@ -229,11 +309,13 @@ router.get('/api/scan/:id', async (req, res) => {
       url:           website.url,
       title:         website.title,
       score:         website.score,
+      scanType:      website.scanType || 'website',
       status:        website.scanStatus,
       lastScannedAt: website.lastScannedAt,
       latestScan:    website.scanResults[0] ?? null,
       aeoContent:    website.aeoContent,
       agentReadiness: website.aeoContent?.agentReadiness ?? null,
+      amazonAiRelevance: website.scanResults[0]?.amazonAiRelevance ?? null,
     });
   } catch (err) {
     console.error('[scan] GET error:', err);

@@ -28,6 +28,7 @@ model Website {
   title         String?
   /// Category tag shown in the directory (e.g. "其他", "商家", "餐廳")
   category      String     @default("其他")
+  scanType      String     @default("website")
   score         Int        @default(0)
   scanStatus    ScanStatus @default(PENDING)
   scanCount     Int        @default(0)
@@ -87,6 +88,8 @@ model ScanResult {
 
   /// Composite score 0–100
   score Int
+  scanType String @default("website")
+  amazonAiRelevance Json?
 
   // ── Per-category scores (0–100, weighted internally) ─────────────────────
   scoreTitle     Int @default(0)
